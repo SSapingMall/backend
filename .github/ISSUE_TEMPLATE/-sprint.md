@@ -2,7 +2,7 @@
 name: "\bSprint"
 about: It's for sprint
 title: "[스프린트]"
-labels: sprint
+labels: sprint, task
 assignees: ''
 
 ---
