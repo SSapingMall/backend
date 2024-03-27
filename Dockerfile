@@ -29,3 +29,4 @@ WORKDIR /app
 # 애플리케이션 소스 추가
 COPY . /app
 
+CMD ["git","config","credential.helper","store"]
