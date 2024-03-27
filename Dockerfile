@@ -19,8 +19,8 @@ RUN apt-get update && apt-get install -y \
 # MySQL 설정 (주의: 실제 프로덕션 환경에서는 보안을 강화해야 합니다.)
 RUN service mysql start && \
     mysql -e "CREATE DATABASE IF NOT EXISTS mydb;" && \
-    mysql -e "CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';" && \
-    mysql -e "GRANT ALL PRIVILEGES ON mydb.* TO 'user'@'localhost';" && \
+    mysql -e "CREATE USER 'ssafy'@'localhost' IDENTIFIED BY 'ssafy';" && \
+    mysql -e "GRANT ALL PRIVILEGES ON mydb.* TO 'ssafy'@'localhost';" && \
     mysql -e "FLUSH PRIVILEGES;"
 
 # 작업 디렉토리 설정
@@ -29,11 +29,3 @@ WORKDIR /app
 # 애플리케이션 소스 추가
 COPY . /app
 
-# Maven을 사용하여 애플리케이션 빌드
-RUN mvn clean package
-
-# 애플리케이션 실행
-CMD ["java", "-jar", "target/myapp-0.0.1-SNAPSHOT.jar"]
-
-# 포트 열기
-EXPOSE 8080
