@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     openjdk-17-jdk \
     maven \
     git \
-    mysql-server \
+    mysql \
     && rm -rf /var/lib/apt/lists/*
 
 # MySQL 설정 (주의: 실제 프로덕션 환경에서는 보안을 강화해야 합니다.)
