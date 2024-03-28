@@ -33,6 +33,6 @@ COPY init_db.sql /docker-entrypoint-initdb.d/
 
 # MySQL 서비스 시작 및 SQL 스크립트 실행
 # CMD 대신 사용, MySQL이 실행된 후 init_db.sql 실행
-RUN mysql -u ssafy mydb -p ssafy< /docker-entrypoint-initdb.d/init_db.sql
+RUN service mysql start && mysql -u ssafy mydb -p ssafy< /docker-entrypoint-initdb.d/init_db.sql
 
 CMD ["git","config","credential.helper","store"]
