@@ -38,3 +38,5 @@ RUN service mysql start && mysql -u ssafy mydb < /docker-entrypoint-initdb.d/ini
 ENV MYSQL_PWD=
 
 CMD ["git","config","credential.helper","store"]
+
+CMD ["service mysql start -d &"]
