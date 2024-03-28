@@ -39,4 +39,4 @@ ENV MYSQL_PWD=
 
 CMD ["git","config","credential.helper","store"]
 
-CMD ["service", "mysql", "start", "-d", "&"]
+CMD ["/etc/init,d/mysql", "start", "&"]
