@@ -4,5 +4,5 @@
   "build": {
     "dockerfile": "../Dockerfile"
   },
-  "postCreateCommand": "/etc/init.d/mysql start"
+  "postCreateCommand": "start_mysql.sh"
 }
