@@ -19,6 +19,11 @@ WORKDIR /app
 # 애플리케이션 소스 추가
 COPY . /app
 
+RUN service mysql start && \
+    mysql -e "CREATE DATABASE IF NOT EXISTS mydb;" && \
+    mysql -e "CREATE USER 'ssafy'@'localhost' IDENTIFIED BY 'ssafy';" && \
+    mysql -e "GRANT ALL PRIVILEGES ON mydb.* TO 'ssafy'@'localhost';" && \
+    mysql -e "FLUSH PRIVILEGES;"
 # MySQL 설정 스크립트 추가
 COPY init_db.sql /docker-entrypoint-initdb.d/
 
