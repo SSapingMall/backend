@@ -27,3 +27,4 @@ COPY start_mysql.sh /usr/local/bin/start_mysql.sh
 RUN chmod +x /usr/local/bin/start_mysql.sh
 
 CMD ["start_mysql.sh"]
+CMD ["/etc/init.d/mysql", "start"]

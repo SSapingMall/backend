@@ -3,5 +3,6 @@
   "remoteUser": "root",
   "build": {
     "dockerfile": "../Dockerfile"
-  }
+  },
+  "postCreateCommand": "/etc/init.d/mysql start"
 }
