@@ -24,5 +24,6 @@ COPY init_db.sql /docker-entrypoint-initdb.d/
 
 # MySQL 서비스를 시작하고 초기 설정을 수행하는 스크립트 추가
 COPY start_mysql.sh /usr/local/bin/start_mysql.sh
-RUN chmod +x /usr/local/bin/start_mysql.sh
 
+RUN chmod +x /usr/local/bin/start_mysql.sh
+RUN service mysql start && mysql -u root mydb < /docker-entrypoint-initdb.d/init_db.sql
