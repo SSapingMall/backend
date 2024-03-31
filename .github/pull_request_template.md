@@ -1,3 +1,9 @@
+---
+name: Design Review
+about: Design Review issue template
+
+---
+
 |Name|about|title|labels|assignees|
 |---|---|---|---|---|
 |Pull Request|It's for pull request|"[PR]"|PR||
