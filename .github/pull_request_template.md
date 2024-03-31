@@ -1,11 +1,6 @@
----
-name: Pull Request
-about: It's for pull request
-title: "[PR]"
-labels: PR
-assignees: ''
-
----
+|Name|about|title|labels|assignees|
+|---|---|---|---|---|
+|Pull Request|It's for pull request|"[PR]"|PR||
 
 <!--
   더 나은 코드리뷰와 history 관리를 위해 아래 내용을 작성해 주세요.
