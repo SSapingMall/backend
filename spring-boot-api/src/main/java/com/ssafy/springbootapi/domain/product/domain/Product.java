@@ -1,16 +1,16 @@
 package com.ssafy.springbootapi.domain.product.domain;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Product {
     @Id
+    @GeneratedValue
     @Column(name = "id", unique = true)
     private Long id;
     @Column(name = "image_url")
@@ -20,7 +20,25 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     private String name;
-    private String desciption;
+    private int price;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    private String description;
     private int category;
     private int stock;
     //    @ManyToOne
@@ -39,14 +57,6 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDesciption() {
-        return desciption;
-    }
-
-    public void setDesciption(String desciption) {
-        this.desciption = desciption;
     }
 
     public int getUserId() {
@@ -113,10 +123,11 @@ public class Product {
 //        this.user = user;
 //    }
 
-    public Product(String name, String imageUrl, String desciption, int category, int stock, int userId) {
+    public Product(String name, String imageUrl, String description, int category, int stock, int userId, int price) {
         this.name = name;
         this.imageUrl = imageUrl;
-        this.desciption = desciption;
+        this.price = price;
+        this.description = description;
         this.category = category;
         this.stock = stock;
         this.userId = userId;
