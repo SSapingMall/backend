@@ -13,9 +13,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     public UserSignUpResponseDTO signUp(UserSignUpRequestDTO requestDTO){
-        System.out.println(requestDTO);
         User user = userRepository.save(requestDTO.toEntity());
-        System.out.println(user);
         return UserSignUpResponseDTO.builder()
                 .email(user.getEmail())
                 .name(user.getName())
