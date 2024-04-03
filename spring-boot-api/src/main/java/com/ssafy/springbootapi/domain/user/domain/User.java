@@ -20,17 +20,27 @@ public class User {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name="password")
+    @Column(name="password", unique = true, nullable = false)
     private String password;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "user")
     @Column(name = "addresses" , nullable = true)
     private List<Address> addresses;
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", addresses=" + addresses +
+                '}';
+    }
 }
