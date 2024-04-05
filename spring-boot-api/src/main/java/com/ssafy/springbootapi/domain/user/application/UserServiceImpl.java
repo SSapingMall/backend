@@ -49,5 +49,13 @@ public class UserServiceImpl implements UserService {
         return UserUpdateResponseDTO.builder().email(user.getEmail()).name(user.getName()).build();
     }
 
+    @Override
+    public boolean removeUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(()->new RuntimeException(id+" 사용자 없음"));
+        userRepository.delete(user);
+        return true;
+    }
+
 
 }

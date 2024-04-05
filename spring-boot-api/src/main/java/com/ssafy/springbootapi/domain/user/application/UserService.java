@@ -4,6 +4,7 @@ import com.ssafy.springbootapi.domain.user.dto.*;
 
 public interface UserService {
     UserSignUpResponseDTO signUp(UserSignUpRequestDTO requestDTO);
-    UserInfoResponseDTO getUserInfo(Long requestDTO);
+    UserInfoResponseDTO getUserInfo(Long id);
     UserUpdateResponseDTO updateUserInfo(UserUpdateRequestDTO requestDTO);
+    boolean removeUser(Long id);
 }
