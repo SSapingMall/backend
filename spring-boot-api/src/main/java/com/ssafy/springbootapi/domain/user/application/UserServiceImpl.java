@@ -3,6 +3,7 @@ package com.ssafy.springbootapi.domain.user.application;
 import com.ssafy.springbootapi.domain.user.dao.UserRepository;
 import com.ssafy.springbootapi.domain.user.domain.User;
 import com.ssafy.springbootapi.domain.user.dto.*;
+import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserInfoResponseDTO getUserInfo(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(()->new RuntimeException(id+" 사용자 없음"));
+                .orElseThrow(()->new UserNotFoundException(id+" 사용자 없음"));
         return UserInfoResponseDTO.builder()
                 .email(user.getEmail())
                 .name(user.getName())
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserUpdateResponseDTO updateUserInfo(UserUpdateRequestDTO requestDTO) {
         User user = userRepository.findById(requestDTO.getId())
-                .orElseThrow(()->new RuntimeException(requestDTO.getEmail()+" 사용자 없음"));
+                .orElseThrow(()->new UserNotFoundException(requestDTO.getEmail()+" 사용자 없음"));
 
         user.update(requestDTO.getEmail(), requestDTO.getPassword(), requestDTO.getName());
 
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean removeUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(()->new RuntimeException(id+" 사용자 없음"));
+                .orElseThrow(()->new UserNotFoundException(id+" 사용자 없음"));
         userRepository.delete(user);
         return true;
     }
