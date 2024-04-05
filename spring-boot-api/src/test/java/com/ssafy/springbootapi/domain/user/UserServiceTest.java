@@ -4,6 +4,7 @@ import com.ssafy.springbootapi.domain.user.application.UserServiceImpl;
 import com.ssafy.springbootapi.domain.user.dao.UserRepository;
 import com.ssafy.springbootapi.domain.user.domain.User;
 import com.ssafy.springbootapi.domain.user.dto.*;
+import com.ssafy.springbootapi.domain.user.exception.UserDuplicatedException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -17,6 +18,8 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -28,6 +31,7 @@ public class UserServiceTest {
 
     @DisplayName("회원가입 happy flow")
     @Tag("unit-test")
+    @Tag("happy-flow")
     @Test
     public void userSignUpHappyFlowTest(){
         // given.
@@ -42,6 +46,25 @@ public class UserServiceTest {
         // then
         Assertions.assertThat(userSignUpResponseDTO.getEmail())
                 .isEqualTo("kkho9654@naver.com");
+    }
+    @DisplayName("회원가입 실패 (이미 존재하는 사용자)")
+    @Tag("unit-test")
+    @Tag("exception-flow")
+    @Test
+    public void signUpDuplicatedUserExceptionTest(){
+        // given
+        UserSignUpRequestDTO requestDTO
+                = new UserSignUpRequestDTO("kkho9654@naver.com","123","kkh");
+        given(userRepository.findByEmail("kkho9654@naver.com"))
+                .willThrow(UserDuplicatedException.class);
+
+        // when then
+        Assertions.assertThatThrownBy(()->userService.signUp(requestDTO))
+                .isInstanceOf(UserDuplicatedException.class);
+
+        verify(userRepository, never())
+                .save(any());
+
     }
 
     @DisplayName("유저 정보 받기 happy flow")
