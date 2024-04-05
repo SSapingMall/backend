@@ -4,6 +4,8 @@ import com.ssafy.springbootapi.domain.user.application.UserService;
 import com.ssafy.springbootapi.domain.user.application.UserServiceImpl;
 import com.ssafy.springbootapi.domain.user.dao.UserRepository;
 import com.ssafy.springbootapi.domain.user.domain.User;
+import com.ssafy.springbootapi.domain.user.dto.UserInfoRequestDTO;
+import com.ssafy.springbootapi.domain.user.dto.UserInfoResponseDTO;
 import com.ssafy.springbootapi.domain.user.dto.UserSignUpRequestDTO;
 import com.ssafy.springbootapi.domain.user.dto.UserSignUpResponseDTO;
 import org.assertj.core.api.Assertions;
@@ -30,22 +32,44 @@ public class UserServiceTest {
     @InjectMocks
     UserServiceImpl userService;
 
-    @DisplayName("회원가입 서비스 로직 테스트")
+    @DisplayName("회원가입 happy flow")
     @Tag("unit-test")
     @Test
     public void userSignUpHappyFlowTest(){
-        // given
+        // given.
         UserSignUpRequestDTO userSignUpRequestDTO
                 = new UserSignUpRequestDTO("kkho9654@naver.com","1234","kkh");
         User userToSave = userSignUpRequestDTO.toEntity();
         given(userRepository.save(any(User.class)))
                 .willReturn(userToSave);
-
         // when
         UserSignUpResponseDTO userSignUpResponseDTO = userService.signUp(userSignUpRequestDTO);
 
         // then
         Assertions.assertThat(userSignUpResponseDTO.getEmail())
+                .isEqualTo("kkho9654@naver.com");
+    }
+
+    @DisplayName("유저 정보 받기 happy flow")
+    @Tag("unit-test")
+    @Test
+    public void getUserInfoHappyFlowTest(){
+        // given
+        UserInfoRequestDTO userInfoRequestDTO
+                = new UserInfoRequestDTO("kkho9654@naver.com");
+
+        given(userRepository.findByEmail("kkho9654@naver.com"))
+                .willReturn(User.builder()
+                        .email("kkho9654@naver.com")
+                        .name("kkh")
+                        .build()
+                );
+
+        // when
+        UserInfoResponseDTO userInfoResponseDTO = userService.getUserInfo(userInfoRequestDTO);
+
+        // then
+        Assertions.assertThat(userInfoResponseDTO.getEmail())
                 .isEqualTo("kkho9654@naver.com");
     }
 }
