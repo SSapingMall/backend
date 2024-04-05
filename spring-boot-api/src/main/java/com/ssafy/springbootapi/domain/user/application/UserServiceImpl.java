@@ -7,12 +7,15 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-
+/*
+ * TODO:: 사용자 정의 exception
+ *  - user not found exception
+ */
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+
 
     @Override
     public UserSignUpResponseDTO signUp(UserSignUpRequestDTO requestDTO){
@@ -23,10 +26,11 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+
     @Override
-    public UserInfoResponseDTO getUserInfo(UserInfoRequestDTO requestDTO) {
-        User user = userRepository.findByEmail(requestDTO.getEmail())
-                .orElseThrow(()->new RuntimeException(requestDTO.getEmail()+" 사용자 없음"));
+    public UserInfoResponseDTO getUserInfo(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(()->new RuntimeException(id+" 사용자 없음"));
         return UserInfoResponseDTO.builder()
                 .email(user.getEmail())
                 .name(user.getName())
@@ -36,13 +40,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public int updateUserInfo(UserUpdateRequestDTO requestDTO) {
-        User user = userRepository.findByEmail(requestDTO.getEmail())
+    public UserUpdateResponseDTO updateUserInfo(UserUpdateRequestDTO requestDTO) {
+        User user = userRepository.findById(requestDTO.getId())
                 .orElseThrow(()->new RuntimeException(requestDTO.getEmail()+" 사용자 없음"));
 
         user.update(requestDTO.getEmail(), requestDTO.getPassword(), requestDTO.getName());
 
-        return 1;
+        return UserUpdateResponseDTO.builder().email(user.getEmail()).name(user.getName()).build();
     }
+
 
 }
