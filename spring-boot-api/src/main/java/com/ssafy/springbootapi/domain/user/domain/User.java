@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+
+/*
+ * TODO:: id to uuid
+ */
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
