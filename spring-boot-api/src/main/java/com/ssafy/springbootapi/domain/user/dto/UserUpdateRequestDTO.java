@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class UserUpdateRequestDTO {
-    @NotBlank(message = "email is blank!")
+    @NotBlank(message = "id is blank!")
     public Long id;
 
     @NotBlank(message = "email is blank!")
