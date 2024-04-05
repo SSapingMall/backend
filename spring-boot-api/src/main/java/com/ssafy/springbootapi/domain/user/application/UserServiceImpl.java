@@ -2,6 +2,8 @@ package com.ssafy.springbootapi.domain.user.application;
 
 import com.ssafy.springbootapi.domain.user.dao.UserRepository;
 import com.ssafy.springbootapi.domain.user.domain.User;
+import com.ssafy.springbootapi.domain.user.dto.UserInfoRequestDTO;
+import com.ssafy.springbootapi.domain.user.dto.UserInfoResponseDTO;
 import com.ssafy.springbootapi.domain.user.dto.UserSignUpRequestDTO;
 import com.ssafy.springbootapi.domain.user.dto.UserSignUpResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,16 @@ public class UserServiceImpl implements UserService {
         return UserSignUpResponseDTO.builder()
                 .email(user.getEmail())
                 .name(user.getName())
+                .build();
+    }
+
+    @Override
+    public UserInfoResponseDTO getUserInfo(UserInfoRequestDTO requestDTO) {
+        User user = userRepository.findByEmail(requestDTO.getEmail());
+        return UserInfoResponseDTO.builder()
+                .email(user.getEmail())
+                .name(user.getName())
+                .addresses(user.getAddresses())
                 .build();
     }
 
