@@ -3,6 +3,7 @@ package com.ssafy.springbootapi.domain.user.application;
 import com.ssafy.springbootapi.domain.user.dao.UserRepository;
 import com.ssafy.springbootapi.domain.user.domain.User;
 import com.ssafy.springbootapi.domain.user.dto.*;
+import com.ssafy.springbootapi.domain.user.exception.UserDuplicatedException;
 import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,11 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
-
     @Override
     public UserSignUpResponseDTO signUp(UserSignUpRequestDTO requestDTO){
+        userRepository.findByEmail(requestDTO.getEmail())
+                .orElseThrow(()->new UserDuplicatedException(requestDTO.getEmail()+"이미 존재하는 사용자"));
+
         User user = userRepository.save(requestDTO.toEntity());
         return UserSignUpResponseDTO.builder()
                 .email(user.getEmail())
