@@ -19,6 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
@@ -59,10 +61,10 @@ public class UserServiceTest {
                 = new UserInfoRequestDTO("kkho9654@naver.com");
 
         given(userRepository.findByEmail("kkho9654@naver.com"))
-                .willReturn(User.builder()
+                .willReturn(Optional.of(User.builder()
                         .email("kkho9654@naver.com")
                         .name("kkh")
-                        .build()
+                        .build())
                 );
 
         // when
