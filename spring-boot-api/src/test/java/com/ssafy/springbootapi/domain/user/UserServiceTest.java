@@ -5,6 +5,7 @@ import com.ssafy.springbootapi.domain.user.dao.UserRepository;
 import com.ssafy.springbootapi.domain.user.domain.User;
 import com.ssafy.springbootapi.domain.user.dto.*;
 import com.ssafy.springbootapi.domain.user.exception.UserDuplicatedException;
+import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -18,8 +19,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -29,7 +29,7 @@ public class UserServiceTest {
     @InjectMocks
     UserServiceImpl userService;
 
-    @DisplayName("회원가입 happy flow")
+    @DisplayName("CREATE - 회원가입 happy flow")
     @Tag("unit-test")
     @Tag("happy-flow")
     @Test
@@ -51,7 +51,7 @@ public class UserServiceTest {
                 .isEqualTo("kkho9654@naver.com");
     }
 
-    @DisplayName("회원가입 실패 (이미 존재하는 사용자)")
+    @DisplayName("CREATE - 회원가입 실패 (이미 존재하는 사용자)")
     @Tag("unit-test")
     @Tag("exception-flow")
     @Test
@@ -71,7 +71,7 @@ public class UserServiceTest {
 
     }
 
-    @DisplayName("유저 정보 받기 happy flow")
+    @DisplayName("READ - 회원 정보 happy flow")
     @Tag("happy-flow")
     @Tag("unit-test")
     @Test
@@ -95,7 +95,20 @@ public class UserServiceTest {
                 .isEqualTo("kkh");
     }
 
-    @DisplayName("회원수정 happy flow")
+    @DisplayName("READ - 회원 정보 읽기 실패")
+    @Test
+    void getUserInfoUserNotFoundExceptionTest(){
+        // given
+        Long id = 1L;
+        given(userRepository.findById(id))
+                .willReturn(Optional.empty());
+
+        // when
+        Assertions.assertThatThrownBy(()->userService.getUserInfo(id))
+                        .isInstanceOf(UserNotFoundException.class);
+
+    }
+    @DisplayName("UPDATE - 회원수정 happy flow")
     @Tag("unit-test")
     @Tag("happy-flow")
     @Test
@@ -121,8 +134,24 @@ public class UserServiceTest {
         Assertions.assertThat(responseDTO.getName())
                 .isEqualTo(requestDTO.getName());
     }
+    @DisplayName("UPDATE - 회원 정보 읽기 실패")
+    @Test
+    void updateUserInfoUserNotFoundExceptionTest(){
+        // given
+        User user = mock(User.class);
+        Long id = 1L;
+        UserUpdateRequestDTO requestDTO = new UserUpdateRequestDTO(1L,"test","test","test");
+        given(userRepository.findById(id))
+                .willReturn(Optional.empty());
 
-    @DisplayName("회원 삭제")
+        // when
+        Assertions.assertThatThrownBy(()->userService.updateUserInfo(requestDTO))
+                .isInstanceOf(UserNotFoundException.class);
+
+        // then
+        verify(user,never()).update(anyString(),anyString(),anyString());
+    }
+    @DisplayName("DELETE - 회원 삭제 성공")
     @Tag("happy-flow")
     @Test
     void userRemoveHappyFlowTest() {
@@ -140,6 +169,21 @@ public class UserServiceTest {
         // then
         Assertions.assertThat(result).isEqualTo(true);
         verify(userRepository).delete(user);
+    }
 
+    @DisplayName("DELETE - 회원 삭제 실패 - 존재하지 않는 사용자")
+    @Test
+    void userRemoveExceptionTest(){
+        // given
+        Long id = 1L;
+        given(userRepository.findById(id))
+                .willReturn(Optional.empty());
+
+        // when
+        Assertions.assertThatThrownBy(()->userService.removeUser(id))
+                .isInstanceOf(UserNotFoundException.class);
+
+        // then
+        verify(userRepository, never()).delete(any());
     }
 }
