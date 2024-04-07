@@ -44,7 +44,7 @@ class PostControllerTest {
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(postController).build();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(Arrays.asList(
                         new Post(1L, "First post", LocalDateTime.now(), LocalDateTime.now(), 0L, 0L, 0L, new User()),
@@ -60,7 +60,7 @@ class PostControllerTest {
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(postController).build();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}", postId))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/{id}", postId))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(post.get())));
     }
@@ -74,7 +74,7 @@ class PostControllerTest {
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(postController)
                 .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(post))) // ObjectMapper를 사용하여 객체를 JSON 형식으로 변환
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -88,7 +88,7 @@ class PostControllerTest {
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(postController).build();
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/posts/{id}", postId))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/posts/{id}", postId))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         verify(postService, times(1)).deletePost(postId);
