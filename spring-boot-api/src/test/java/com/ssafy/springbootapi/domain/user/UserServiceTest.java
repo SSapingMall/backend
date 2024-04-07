@@ -1,6 +1,6 @@
 package com.ssafy.springbootapi.domain.user;
 
-import com.ssafy.springbootapi.domain.user.application.UserServiceImpl;
+import com.ssafy.springbootapi.domain.user.application.UserService;
 import com.ssafy.springbootapi.domain.user.dao.UserRepository;
 import com.ssafy.springbootapi.domain.user.domain.User;
 import com.ssafy.springbootapi.domain.user.dto.*;
@@ -27,7 +27,7 @@ public class UserServiceTest {
     UserRepository userRepository;
 
     @InjectMocks
-    UserServiceImpl userService;
+    UserService userService;
 
     @DisplayName("CREATE - 회원가입 happy flow")
     @Tag("unit-test")
@@ -35,19 +35,19 @@ public class UserServiceTest {
     @Test
     public void userSignUpHappyFlowTest(){
         // given.
-        UserSignUpRequestDTO userSignUpRequestDTO
-                = new UserSignUpRequestDTO("kkho9654@naver.com","1234","kkh");
-        User userToSave = userSignUpRequestDTO.toEntity();
+        UserSignUpRequest userSignUpRequest
+                = new UserSignUpRequest("kkho9654@naver.com","1234","kkh");
+        User userToSave = userSignUpRequest.toEntity();
         given(userRepository.findByEmail(anyString()))
                 .willReturn(Optional.empty());
 
         given(userRepository.save(any(User.class)))
                 .willReturn(userToSave);
         // when
-        UserSignUpResponseDTO userSignUpResponseDTO = userService.signUp(userSignUpRequestDTO);
+        UserSignUpResponse userSignUpResponse = userService.signUp(userSignUpRequest);
 
         // then
-        Assertions.assertThat(userSignUpResponseDTO.getEmail())
+        Assertions.assertThat(userSignUpResponse.getEmail())
                 .isEqualTo("kkho9654@naver.com");
     }
 
@@ -57,8 +57,8 @@ public class UserServiceTest {
     @Test
     public void signUpDuplicatedUserExceptionTest(){
         // given
-        UserSignUpRequestDTO requestDTO
-                = new UserSignUpRequestDTO("kkho9654@naver.com","123","kkh");
+        UserSignUpRequest requestDTO
+                = new UserSignUpRequest("kkho9654@naver.com","123","kkh");
         given(userRepository.findByEmail("kkho9654@naver.com"))
                 .willThrow(UserDuplicatedException.class);
 
@@ -86,12 +86,12 @@ public class UserServiceTest {
                 );
 
         // when
-        UserInfoResponseDTO userInfoResponseDTO = userService.getUserInfo(id);
+        UserInfoResponse userInfoResponse = userService.getUserInfo(id);
 
         // then
-        Assertions.assertThat(userInfoResponseDTO.getEmail())
+        Assertions.assertThat(userInfoResponse.getEmail())
                 .isEqualTo("kkho9654@naver.com");
-        Assertions.assertThat(userInfoResponseDTO.getName())
+        Assertions.assertThat(userInfoResponse.getName())
                 .isEqualTo("kkh");
     }
 
@@ -114,8 +114,8 @@ public class UserServiceTest {
     @Test
     void updateUserInfoHappyFlow() {
         // given
-        UserUpdateRequestDTO requestDTO
-                = new UserUpdateRequestDTO(1L,"kkho9654@naver2.com","1112","3333");
+        UserUpdateRequest requestDTO
+                = new UserUpdateRequest(1L,"kkho9654@naver2.com","1112","3333");
 
         // "kkho9654@naver.com","1234","kkh"
         given(userRepository.findById(1L))
@@ -126,7 +126,7 @@ public class UserServiceTest {
                         .name("kkh").build()));
 
         // when
-        UserUpdateResponseDTO responseDTO = userService.updateUserInfo(requestDTO);
+        UserUpdateResponse responseDTO = userService.updateUserInfo(requestDTO);
 
         // then
         Assertions.assertThat(responseDTO.getEmail())
@@ -140,7 +140,7 @@ public class UserServiceTest {
         // given
         User user = mock(User.class);
         Long id = 1L;
-        UserUpdateRequestDTO requestDTO = new UserUpdateRequestDTO(1L,"test","test","test");
+        UserUpdateRequest requestDTO = new UserUpdateRequest(1L,"test","test","test");
         given(userRepository.findById(id))
                 .willReturn(Optional.empty());
 
