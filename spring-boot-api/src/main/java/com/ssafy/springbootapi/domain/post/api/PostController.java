@@ -44,4 +44,10 @@ public class PostController {
         postService.deletePost(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post postDetails) {
+        Post updatedPost = postService.updatePost(id, postDetails);
+        return new ResponseEntity<>(updatedPost, HttpStatus.OK);
+    }
 }
