@@ -3,7 +3,6 @@ package com.ssafy.springbootapi.domain.product.api;
 import java.util.List;
 
 import com.ssafy.springbootapi.domain.product.application.ProductService;
-import com.ssafy.springbootapi.domain.product.domain.Product;
 import com.ssafy.springbootapi.domain.product.dto.ProductInput;
 import com.ssafy.springbootapi.domain.product.dto.ProductListOutput;
 import com.ssafy.springbootapi.domain.product.dto.ProductOutput;
@@ -38,19 +37,9 @@ public class ProductController {
 
     @Operation(summary = "새 제품 추가")
     @PostMapping("")
-    public ResponseEntity<Product> createProduct(@RequestBody ProductInput productInput) {
-        // ProductInput을 Product 엔티티로 변환
-        Product product = new Product();
-        product.setName(productInput.getName());
-        product.setImageUrl(productInput.getImageUrl());
-        product.setPrice(productInput.getPrice());
-        product.setDescription(productInput.getDescription());
-        product.setCategory(productInput.getCategory());
-        product.setStock(productInput.getStock());
-        product.setUserId(productInput.getUser_id());
-
+    public ResponseEntity<ProductOutput> createProduct(@RequestBody ProductInput productInput) {
         // 서비스 레이어를 통해 비즈니스 로직 처리
-        Product newProduct = productService.insertProduct(product);
+        ProductOutput newProduct = productService.insertProduct(productInput);
 
         // 생성된 Product 객체 반환
         return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
@@ -58,15 +47,17 @@ public class ProductController {
 
     @Operation(summary = "제품 정보 업데이트")
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
-        Product updatedProduct = productService.updateProduct(productDetails);
+    public ResponseEntity<ProductOutput> updateProduct(@PathVariable Long id, @RequestBody ProductInput productDetails) {
+        // 서비스 레이어를 통해 비즈니스 로직 처리
+        ProductOutput updatedProduct = productService.updateProduct(id, productDetails);
+
+        // 업데이트된 Product 객체 반환
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
-
     @Operation(summary = "제품 삭제")
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteProduct(@PathVariable Long id) {
-        productService.removeProduct(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<ProductOutput> deleteProduct(@PathVariable Long id) {
+        ProductOutput product = productService.removeProduct(id);
+        return new ResponseEntity<>(product, HttpStatus.NO_CONTENT);
     }
 }
