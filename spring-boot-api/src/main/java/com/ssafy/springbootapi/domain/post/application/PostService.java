@@ -32,4 +32,14 @@ public class PostService {
     public void deletePost(Long id) {
         postRepository.deleteById(id);
     }
+
+    public Post updatePost(Long id, Post postDetails) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException());
+
+        post.setContents(postDetails.getContents());
+
+        return postRepository.save(post);
+    }
+
 }
