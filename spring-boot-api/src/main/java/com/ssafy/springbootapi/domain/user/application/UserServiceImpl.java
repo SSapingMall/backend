@@ -20,9 +20,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserSignUpResponseDTO signUp(UserSignUpRequestDTO requestDTO){
-        userRepository.findByEmail(requestDTO.getEmail())
-                .orElseThrow(()->new UserDuplicatedException(requestDTO.getEmail()+"이미 존재하는 사용자"));
-
+        if(userRepository.findByEmail(requestDTO.getEmail()).isPresent()){
+            throw new UserDuplicatedException(requestDTO.getEmail()+"이미 존재하는 사용자");
+        }
         User user = userRepository.save(requestDTO.toEntity());
         return UserSignUpResponseDTO.builder()
                 .email(user.getEmail())

@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -38,6 +38,9 @@ public class UserServiceTest {
         UserSignUpRequestDTO userSignUpRequestDTO
                 = new UserSignUpRequestDTO("kkho9654@naver.com","1234","kkh");
         User userToSave = userSignUpRequestDTO.toEntity();
+        given(userRepository.findByEmail(anyString()))
+                .willReturn(Optional.empty());
+
         given(userRepository.save(any(User.class)))
                 .willReturn(userToSave);
         // when
@@ -47,6 +50,7 @@ public class UserServiceTest {
         Assertions.assertThat(userSignUpResponseDTO.getEmail())
                 .isEqualTo("kkho9654@naver.com");
     }
+
     @DisplayName("회원가입 실패 (이미 존재하는 사용자)")
     @Tag("unit-test")
     @Tag("exception-flow")
@@ -91,25 +95,6 @@ public class UserServiceTest {
                 .isEqualTo("kkh");
     }
 
-    @DisplayName("회원가입 happy flow")
-    @Tag("unit-test")
-    @Tag("happy-flow")
-    @Test
-    public void userUpdateHappyFlowTest(){
-        // given.
-        UserSignUpRequestDTO userSignUpRequestDTO
-                = new UserSignUpRequestDTO("kkho9654@naver.com","1234","kkh");
-        User userToSave = userSignUpRequestDTO.toEntity();
-        given(userRepository.save(any(User.class)))
-                .willReturn(userToSave);
-        // when
-        UserSignUpResponseDTO userSignUpResponseDTO = userService.signUp(userSignUpRequestDTO);
-
-        // then
-        Assertions.assertThat(userSignUpResponseDTO.getEmail())
-                .isEqualTo("kkho9654@naver.com");
-    }
-
     @DisplayName("회원수정 happy flow")
     @Tag("unit-test")
     @Tag("happy-flow")
@@ -132,10 +117,29 @@ public class UserServiceTest {
 
         // then
         Assertions.assertThat(responseDTO.getEmail())
-                .isEqualTo("kkho9654@naver2.com");
+                .isEqualTo(requestDTO.getEmail());
         Assertions.assertThat(responseDTO.getName())
-                .isEqualTo("3333");
+                .isEqualTo(requestDTO.getName());
     }
 
+    @DisplayName("회원 삭제")
+    @Tag("happy-flow")
+    @Test
+    void userRemoveHappyFlowTest() {
+        // given
+        Long id = 1L;
+        User user = User.builder()
+                        .id(1L)
+                        .email("kkho9654@naver.com")
+                        .name("kkh").password("123").build();
+        given(userRepository.findById(id))
+                .willReturn(Optional.of(user));
+        // when
+        boolean result = userService.removeUser(id);
 
+        // then
+        Assertions.assertThat(result).isEqualTo(true);
+        verify(userRepository).delete(user);
+
+    }
 }
