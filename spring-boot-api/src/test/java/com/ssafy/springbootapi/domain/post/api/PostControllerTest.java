@@ -21,9 +21,14 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class PostControllerTest {
@@ -37,6 +42,8 @@ class PostControllerTest {
 
     @Test
     void getAllPosts() throws Exception {
+
+        //given
         when(postService.getAllPosts()).thenReturn(Arrays.asList(
                 new Post(1L, "First post", LocalDateTime.now(), LocalDateTime.now(), 0L, 0L, 0L, new User()),
                 new Post(2L, "Second post", LocalDateTime.now(), LocalDateTime.now(), 0L, 0L, 0L, new User())
@@ -44,8 +51,10 @@ class PostControllerTest {
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(postController).build();
 
+        //when
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                //then
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(Arrays.asList(
                         new Post(1L, "First post", LocalDateTime.now(), LocalDateTime.now(), 0L, 0L, 0L, new User()),
                         new Post(2L, "Second post", LocalDateTime.now(), LocalDateTime.now(), 0L, 0L, 0L, new User())
@@ -54,43 +63,72 @@ class PostControllerTest {
 
     @Test
     void getPostById() throws Exception {
+
+        // given
         Long postId = 1L;
         Optional<Post> post = Optional.of(new Post(postId, "First post", LocalDateTime.now(), LocalDateTime.now(), 0L, 0L, 0L, new User()));
         when(postService.getPostById(postId)).thenReturn(post);
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(postController).build();
 
+        //when
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/posts/{id}", postId))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                //then
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(post.get())));
     }
 
     @Test
     void createPost() throws Exception {
+        //given
         Post post = new Post(1L, "New post", LocalDateTime.now(), LocalDateTime.now(), 0L, 0L, 0L, new User());
 
-        when(postService.savePost(ArgumentMatchers.any(Post.class))).thenReturn(post);
+        when(postService.savePost(any(Post.class))).thenReturn(post);
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(postController)
                 .build();
 
+        //when
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(post))) // ObjectMapper를 사용하여 객체를 JSON 형식으로 변환
-                .andExpect(MockMvcResultMatchers.status().isCreated())
+                //then
+                .andExpect(status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().json(new ObjectMapper().writeValueAsString(post))); // ObjectMapper를 사용하여 객체를 JSON 형식으로 변환하여 비교
     }
 
 
     @Test
     void deletePost() throws Exception {
+        //given
         Long postId = 1L;
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(postController).build();
-
+        //when
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/posts/{id}", postId))
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
+                //then
+                .andExpect(status().isNoContent());
 
-        verify(postService, times(1)).deletePost(postId);
+        verify(postService, times(1)).deletePost(postId); //postService의 deletePost 메소드가 정확히 한 번 호출되었는지 검증
+    }
+
+    @Test
+    public void updatePostTest() throws Exception {
+        //given
+        Post post = new Post();
+        post.setId(1L);
+        post.setContents("Updated content");
+
+        given(postService.updatePost(any(Long.class), any(Post.class))).willReturn(post);
+
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(postController).build();
+
+        //when
+        mockMvc.perform(put("/api/v1/posts/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(post)))
+                //then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contents").value("Updated content"));
     }
 }
