@@ -1,13 +1,12 @@
 package com.ssafy.springbootapi.domain.user.dto;
 
-import com.ssafy.springbootapi.domain.user.domain.User;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class UserUpdateRequestDTO {
+public class UserUpdateRequest {
     @NotBlank(message = "id is blank!")
     public Long id;
 

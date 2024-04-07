@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class UserSignUpRequestDTO {
+public class UserSignUpRequest {
     @NotBlank(message = "email is blank!")
     public String email;
 
