@@ -1,116 +1,150 @@
 package com.ssafy.springbootapi.domain.product.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
 import com.ssafy.springbootapi.domain.product.dao.ProductRepository;
 import com.ssafy.springbootapi.domain.product.domain.Product;
+import com.ssafy.springbootapi.domain.product.dto.ProductInput;
 import com.ssafy.springbootapi.domain.product.dto.ProductListOutput;
 import com.ssafy.springbootapi.domain.product.dto.ProductOutput;
-import org.assertj.core.api.Assertions;
+import com.ssafy.springbootapi.domain.product.exception.NotFoundProductException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.modelmapper.ModelMapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.Arrays;
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
+
     @Mock
     private ProductRepository productRepository;
 
+    @Mock
+    private ModelMapper modelMapper;
+
     @InjectMocks
     private ProductService productService;
-
+    @DisplayName("Get All Products")
     @Test
     void getAllProducts() {
-        // given
-        Product product1 = new Product("name1","img1", "desc1", 1, 10, 1, 1);
-        Product product2 = new Product("name2","img2", "desc2", 1, 10, 1, 1);
-        Product product3 = new Product("name3","img3", "desc3", 1, 10, 1, 1);
-        when(productRepository.findAll()).thenReturn(Arrays.asList(product1, product2, product3));
+        Product product1 = new Product();
+        Product product2 = new Product();
+        ProductListOutput productListOutput1 = new ProductListOutput();
+        ProductListOutput productListOutput2 = new ProductListOutput();
 
-        // when
+        when(productRepository.findAll()).thenReturn(Arrays.asList(product1, product2));
+        when(modelMapper.map(product1, ProductListOutput.class)).thenReturn(productListOutput1);
+        when(modelMapper.map(product2, ProductListOutput.class)).thenReturn(productListOutput2);
+
         List<ProductListOutput> result = productService.getAllProducts();
 
-        // then
-        assertThat(result.size()).isEqualTo(3);
-//        assertThat(result).contains(product1, product2, product3);
+        assertThat(result).containsExactly(productListOutput1, productListOutput2);
     }
-
+    @DisplayName("Get One Product")
     @Test
     void getProductById() {
-        // given
-        Product product1 = new Product("name1","img1", "desc1", 1, 10, 1, 1);
-        when(productRepository.getReferenceById(1L)).thenReturn(product1);
+        Product product = new Product();
+        ProductOutput productOutput = new ProductOutput();
 
-        // when
+        when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product));
+        when(modelMapper.map(product, ProductOutput.class)).thenReturn(productOutput);
+
         ProductOutput result = productService.getProductById(1L);
 
-        // then
-        assertThat(result).isNotNull();
-//        assertThat(result).isEqualTo(product1);
+        assertThat(result).isEqualTo(productOutput);
     }
+    @DisplayName("Product Not Found")
+    @Test
+    void getProductByIdNotFound() {
+        when(productRepository.findById(1L)).thenReturn(java.util.Optional.empty());
 
+        assertThatThrownBy(() -> productService.getProductById(1L))
+                .isInstanceOf(NotFoundProductException.class)
+                .hasMessageContaining("Product not found with id: 1");
+    }
+    @DisplayName("Insert Product")
     @Test
     void insertProduct() {
-        // given
-        Product product1 = new Product("name1","img1", "desc1", 1, 10, 1, 1);
-        when(productRepository.save(product1)).thenReturn(product1);
+        ProductInput productInput = new ProductInput();
+        Product product = new Product();
+        ProductOutput productOutput = new ProductOutput();
 
-        // when
-        Product result = productService.insertProduct(product1);
+        when(modelMapper.map(productInput, Product.class)).thenReturn(product);
+        when(productRepository.save(product)).thenReturn(product);
+        when(modelMapper.map(product, ProductOutput.class)).thenReturn(productOutput);
 
-        // then
-        assertThat(result).isNotNull();
-        assertThat(result).isEqualTo(product1);
+        ProductOutput result = productService.insertProduct(productInput);
+
+        assertThat(result).isEqualTo(productOutput);
     }
 
+    @DisplayName("Remove Product")
     @Test
     void removeProduct() {
-        Long id = 1L;
-        // given
-        Product product1 = new Product("name1","img1", "desc1", 1, 10, 1,1 );
-        when(productRepository.getReferenceById(id)).thenReturn(product1);
-        doNothing().when(productRepository).delete(product1);
+        Product product = new Product();
+        ProductOutput productOutput = new ProductOutput();
 
-        // when
-        Product removedProduct = productService.removeProduct(id);
+        when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product));
+        doNothing().when(productRepository).delete(product);
+        when(modelMapper.map(product, ProductOutput.class)).thenReturn(productOutput);
 
-        // then
-        verify(productRepository).getReferenceById(id);
-        verify(productRepository).delete(product1);
-        assertThat(removedProduct).isEqualTo(product1);
+        ProductOutput result = productService.removeProduct(1L);
+
+        assertThat(result).isEqualTo(productOutput);
     }
+    @DisplayName("Remove Product Failed - Not found")
+    @Test
+    void removeProductNotFound() {
+        Long invalidProductId = 1L;
+        when(productRepository.findById(invalidProductId)).thenReturn(java.util.Optional.empty());
 
+        assertThatThrownBy(() -> productService.removeProduct(invalidProductId))
+                .isInstanceOf(NotFoundProductException.class)
+                .hasMessageContaining("Product not found with id: " + invalidProductId);
+    }
+    @DisplayName("Update Product")
     @Test
     void updateProduct() {
-        Long id = 1L;
-        // given
-        Product product1 = new Product("name1","img1", "desc1", 1, 10, 1,1);
-        product1.setId(id);
-        Product product2 = new Product("name2","img2", "desc2", 2, 20, 2,1);
-        product2.setId(id);
+        ProductInput productInput = new ProductInput();
+        productInput.setCategory(2);
+        productInput.setStock(20);
+        productInput.setImageUrl("newImageUrl");
 
-        when(productRepository.getReferenceById(id)).thenReturn(product1);
-        when(productRepository.save(any(Product.class))).thenAnswer(i -> i.getArguments()[0]);
+        Product product = new Product();
+        product.setId(1L);
 
-        // when
-        Product newProduct = productService.updateProduct(product2);
+        ProductOutput productOutput = new ProductOutput();
 
-        // then
-        verify(productRepository).getReferenceById(id); // getReferenceById 메소드가 호출되었는지 검증
-        verify(productRepository).save(any(Product.class)); // save 메소드가 호출되었는지 검증
-        assertThat(newProduct.getImageUrl()).isEqualTo("img2"); // 업데이트된 이미지 URL 검증
-        assertThat(newProduct.getStock()).isEqualTo(20); // 업데이트된 재고 수량 검증
-        assertThat(newProduct.getCategory()).isEqualTo(2); // 업데이트된 카테고리 ID 검증
+        when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product));
+        when(modelMapper.map(product, ProductOutput.class)).thenReturn(productOutput);
+
+        ProductOutput result = productService.updateProduct(1L, productInput);
+
+        assertThat(result).isEqualTo(productOutput);
+        assertThat(product.getCategory()).isEqualTo(2);
+        assertThat(product.getStock()).isEqualTo(20);
+        assertThat(product.getImageUrl()).isEqualTo("newImageUrl");
+    }
+    @DisplayName("Update Product Failed - Not found")
+    @Test
+    void updateProductNotFound() {
+        Long invalidProductId = 1L;
+        ProductInput productInput = new ProductInput();
+        productInput.setCategory(1);
+        productInput.setStock(10);
+        productInput.setImageUrl("testUrl");
+
+        when(productRepository.findById(invalidProductId)).thenReturn(java.util.Optional.empty());
+
+        assertThatThrownBy(() -> productService.updateProduct(invalidProductId, productInput))
+                .isInstanceOf(NotFoundProductException.class)
+                .hasMessageContaining("Product not found with id: " + invalidProductId);
     }
 }
