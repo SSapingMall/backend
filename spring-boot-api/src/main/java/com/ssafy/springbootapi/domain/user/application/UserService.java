@@ -6,5 +6,5 @@ public interface UserService {
     UserSignUpResponseDTO signUp(UserSignUpRequestDTO requestDTO);
     UserInfoResponseDTO getUserInfo(Long id);
     UserUpdateResponseDTO updateUserInfo(UserUpdateRequestDTO requestDTO);
-    boolean removeUser(Long id);
+    void removeUser(Long id);
 }

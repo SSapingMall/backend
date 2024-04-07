@@ -54,11 +54,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean removeUser(Long id) {
+    public void removeUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(()->new UserNotFoundException(id+" 사용자 없음"));
         userRepository.delete(user);
-        return true;
     }
 
 
