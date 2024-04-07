@@ -164,10 +164,9 @@ public class UserServiceTest {
         given(userRepository.findById(id))
                 .willReturn(Optional.of(user));
         // when
-        boolean result = userService.removeUser(id);
+        userService.removeUser(id);
 
         // then
-        Assertions.assertThat(result).isEqualTo(true);
         verify(userRepository).delete(user);
     }
 
