@@ -3,6 +3,7 @@ package com.ssafy.springbootapi.domain.user;
 import com.ssafy.springbootapi.domain.user.application.UserService;
 import com.ssafy.springbootapi.domain.user.dao.UserRepository;
 import com.ssafy.springbootapi.domain.user.domain.User;
+import com.ssafy.springbootapi.domain.user.domain.UserMapper;
 import com.ssafy.springbootapi.domain.user.dto.*;
 import com.ssafy.springbootapi.domain.user.exception.UserDuplicatedException;
 import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
@@ -11,9 +12,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Optional;
 
@@ -25,6 +30,9 @@ import static org.mockito.Mockito.*;
 public class UserServiceTest {
     @Mock
     UserRepository userRepository;
+
+    @Spy
+    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @InjectMocks
     UserService userService;
@@ -116,14 +124,19 @@ public class UserServiceTest {
         // given
         UserUpdateRequest requestDTO
                 = new UserUpdateRequest(1L,"kkho9654@naver2.com","1112","3333");
-
-        // "kkho9654@naver.com","1234","kkh"
+        User user = User.builder()
+                .id(1L)
+                .email("kkho9654@naver.com")
+                .password("1234")
+                .name("kkh").build();
+        User updatedUser = userMapper.toEntity(requestDTO);
         given(userRepository.findById(1L))
-                .willReturn(Optional.of(User.builder()
-                        .id(1L)
-                        .email("kkho9654@naver.com")
-                        .password("1234")
-                        .name("kkh").build()));
+                .willReturn(Optional.of(user));
+
+        doNothing().when(userMapper).updateUserFromDto(requestDTO, user);
+
+        given(userRepository.save(user))
+                .willReturn(updatedUser);
 
         // when
         UserUpdateResponse responseDTO = userService.updateUserInfo(requestDTO);
@@ -138,7 +151,7 @@ public class UserServiceTest {
     @Test
     void updateUserInfoUserNotFoundExceptionTest(){
         // given
-        User user = mock(User.class);
+        UserMapper userMapper = mock(UserMapper.class);
         Long id = 1L;
         UserUpdateRequest requestDTO = new UserUpdateRequest(1L,"test","test","test");
         given(userRepository.findById(id))
@@ -149,7 +162,7 @@ public class UserServiceTest {
                 .isInstanceOf(UserNotFoundException.class);
 
         // then
-        verify(user,never()).update(anyString(),anyString(),anyString());
+        verify(userMapper,never()).updateUserFromDto(any(),any());
     }
     @DisplayName("DELETE - 회원 삭제 성공")
     @Tag("happy-flow")
