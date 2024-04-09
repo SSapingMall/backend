@@ -37,11 +37,11 @@ public class UserServiceTest {
     @InjectMocks
     UserService userService;
 
-    @DisplayName("CREATE - 회원가입 happy flow")
+    @DisplayName("유저 회원가입 성공 테스트")
     @Tag("unit-test")
     @Tag("happy-flow")
     @Test
-    public void userSignUpHappyFlowTest(){
+    public void 유저회원가입성공테스트(){
         // given.
         UserSignUpRequest userSignUpRequest
                 = new UserSignUpRequest("kkho9654@naver.com","1234","kkh");
@@ -59,11 +59,11 @@ public class UserServiceTest {
                 .isEqualTo("kkho9654@naver.com");
     }
 
-    @DisplayName("CREATE - 회원가입 실패 (이미 존재하는 사용자)")
+    @DisplayName("유저 회원가입 중복사용자 예외테스트")
     @Tag("unit-test")
     @Tag("exception-flow")
     @Test
-    public void signUpDuplicatedUserExceptionTest(){
+    public void 유저회원가입중복사용자예외테스트(){
         // given
         UserSignUpRequest requestDTO
                 = new UserSignUpRequest("kkho9654@naver.com","123","kkh");
@@ -79,11 +79,11 @@ public class UserServiceTest {
 
     }
 
-    @DisplayName("READ - 회원 정보 happy flow")
+    @DisplayName("유저 정보읽기 성공테스트")
     @Tag("happy-flow")
     @Tag("unit-test")
     @Test
-    public void getUserInfoHappyFlowTest(){
+    public void 유저정보읽기성공테스트(){
         // given
         Long id = 1L;
         given(userRepository.findById(id))
@@ -103,9 +103,9 @@ public class UserServiceTest {
                 .isEqualTo("kkh");
     }
 
-    @DisplayName("READ - 회원 정보 읽기 실패")
+    @DisplayName("유저 정보 읽기 존재하지 않는 사용자 예외테스트")
     @Test
-    void getUserInfoUserNotFoundExceptionTest(){
+    void 유저정보읽기존재하지않는사용자예외테스트(){
         // given
         Long id = 1L;
         given(userRepository.findById(id))
@@ -116,11 +116,11 @@ public class UserServiceTest {
                         .isInstanceOf(UserNotFoundException.class);
 
     }
-    @DisplayName("UPDATE - 회원수정 happy flow")
+    @DisplayName("유저 수정 성공 테스트")
     @Tag("unit-test")
     @Tag("happy-flow")
     @Test
-    void updateUserInfoHappyFlow() {
+    void 유저수정성공테스트() {
         // given
         UserUpdateRequest requestDTO
                 = new UserUpdateRequest(1L,"kkho9654@naver2.com","1112","3333");
@@ -147,9 +147,9 @@ public class UserServiceTest {
         Assertions.assertThat(responseDTO.getName())
                 .isEqualTo(requestDTO.getName());
     }
-    @DisplayName("UPDATE - 회원 정보 읽기 실패")
+    @DisplayName("유저 업데이트 존재하지 않는 사용자 예외 테스트")
     @Test
-    void updateUserInfoUserNotFoundExceptionTest(){
+    void 유저업데이트존재하지않는사용자예외테스트(){
         // given
         UserMapper userMapper = mock(UserMapper.class);
         Long id = 1L;
@@ -164,10 +164,10 @@ public class UserServiceTest {
         // then
         verify(userMapper,never()).updateUserFromDto(any(),any());
     }
-    @DisplayName("DELETE - 회원 삭제 성공")
+    @DisplayName("유저 삭제 성공 테스트")
     @Tag("happy-flow")
     @Test
-    void userRemoveHappyFlowTest() {
+    void 유저삭제성공테스트() {
         // given
         Long id = 1L;
         User user = User.builder()
@@ -183,9 +183,9 @@ public class UserServiceTest {
         verify(userRepository).delete(user);
     }
 
-    @DisplayName("DELETE - 회원 삭제 실패 - 존재하지 않는 사용자")
+    @DisplayName("유저 삭제 존재하지않는 사용자 예외 테스트")
     @Test
-    void userRemoveExceptionTest(){
+    void 유저삭제존재하지않는사용자예외테스트(){
         // given
         Long id = 1L;
         given(userRepository.findById(id))
