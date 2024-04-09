@@ -9,14 +9,8 @@ import lombok.Getter;
 public class UserUpdateRequest {
     @NotBlank(message = "id is blank!")
     public Long id;
-
-    @NotBlank(message = "email is blank!")
     public String email;
-
-    @NotBlank(message = "password is blank!")
     public String password;
-
-    @NotBlank(message = "name is blank!")
     public String name;
 
     @Override

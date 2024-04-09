@@ -37,12 +37,6 @@ public class User {
     @Column(name = "addresses" , nullable = true)
     private List<Address> addresses;
 
-    public void update(String email, String password, String name){
-        this.email = email;
-        this.password = password;
-        this.name = name;
-    }
-
     @Override
     public String toString() {
         return "User{" +

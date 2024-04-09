@@ -2,6 +2,7 @@ package com.ssafy.springbootapi.domain.user.application;
 
 import com.ssafy.springbootapi.domain.user.dao.UserRepository;
 import com.ssafy.springbootapi.domain.user.domain.User;
+import com.ssafy.springbootapi.domain.user.domain.UserMapper;
 import com.ssafy.springbootapi.domain.user.dto.*;
 import com.ssafy.springbootapi.domain.user.exception.UserDuplicatedException;
 import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public UserSignUpResponse signUp(UserSignUpRequest requestDTO){
         if(userRepository.findByEmail(requestDTO.getEmail()).isPresent()){
@@ -45,7 +47,8 @@ public class UserService {
         User user = userRepository.findById(requestDTO.getId())
                 .orElseThrow(()->new UserNotFoundException(requestDTO.getEmail()+" 사용자 없음"));
 
-        user.update(requestDTO.getEmail(), requestDTO.getPassword(), requestDTO.getName());
+        userMapper.updateUserFromDto(requestDTO,user);
+        user = userRepository.save(user);
 
         return UserUpdateResponse.builder().email(user.getEmail()).name(user.getName()).build();
     }

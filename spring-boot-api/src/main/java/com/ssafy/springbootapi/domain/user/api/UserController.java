@@ -33,7 +33,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.getUserInfo(id));
     }
 
-    @PutMapping
+    @PatchMapping
     @ToException
     @Operation(summary = "회원 정보 수정", description = "회원 정보 수정 할 때 사용하는 API")
     public ResponseEntity<UserUpdateResponse> update(@RequestBody UserUpdateRequest userUpdateRequest){
