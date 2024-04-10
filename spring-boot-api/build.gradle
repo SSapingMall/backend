@@ -27,6 +27,14 @@ dependencies {
 	// for lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// for MapStruct
+	implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+
+	// for domain -> dto auto change
+	implementation 'org.modelmapper:modelmapper:2.3.8'
+	
 }
 
 tasks.named('test') {
