@@ -7,7 +7,7 @@ import java.sql.Date;
 
 
 @Getter @Setter
-public class PostReplyDto {
+public class PostReply {
     private Long id;
     private String contents;
     private Date createdAt;

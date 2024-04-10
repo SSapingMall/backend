@@ -6,7 +6,7 @@ import lombok.Setter;
 import java.sql.Date;
 
 @Getter @Setter
-public class PostDto {
+public class Post {
     private Long id;
     private String contents;
     private Date createdAt;
