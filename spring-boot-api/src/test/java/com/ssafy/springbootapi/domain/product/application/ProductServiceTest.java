@@ -2,14 +2,15 @@ package com.ssafy.springbootapi.domain.product.application;
 
 import com.ssafy.springbootapi.domain.product.dao.ProductRepository;
 import com.ssafy.springbootapi.domain.product.domain.Product;
+import com.ssafy.springbootapi.domain.product.domain.ProductMapper;
 import com.ssafy.springbootapi.domain.product.dto.ProductInput;
 import com.ssafy.springbootapi.domain.product.dto.ProductListOutput;
 import com.ssafy.springbootapi.domain.product.dto.ProductOutput;
+import com.ssafy.springbootapi.domain.product.dto.ProductUpdate;
 import com.ssafy.springbootapi.domain.product.exception.NotFoundProductException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.modelmapper.ModelMapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,7 +28,7 @@ class ProductServiceTest {
     private ProductRepository productRepository;
 
     @Mock
-    private ModelMapper modelMapper;
+    private ProductMapper productMapper;
 
     @InjectMocks
     private ProductService productService;
@@ -42,8 +43,8 @@ class ProductServiceTest {
         ProductListOutput productListOutput2 = new ProductListOutput();
 
         when(productRepository.findAll()).thenReturn(Arrays.asList(product1, product2));
-        when(modelMapper.map(product1, ProductListOutput.class)).thenReturn(productListOutput1);
-        when(modelMapper.map(product2, ProductListOutput.class)).thenReturn(productListOutput2);
+        when(productMapper.toProductListOutput(product1)).thenReturn(productListOutput1);
+        when(productMapper.toProductListOutput(product2)).thenReturn(productListOutput2);
 
         // when
         List<ProductListOutput> result = productService.getAllProducts();
@@ -51,6 +52,7 @@ class ProductServiceTest {
         // then
         assertThat(result).containsExactly(productListOutput1, productListOutput2);
     }
+
     @DisplayName("상품 아이디 조회 성공 테스트")
     @Test
     void 상품아이디조회성공테스트() {
@@ -59,7 +61,7 @@ class ProductServiceTest {
         ProductOutput productOutput = new ProductOutput();
 
         when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product));
-        when(modelMapper.map(product, ProductOutput.class)).thenReturn(productOutput);
+        when(productMapper.toProductOutput(product)).thenReturn(productOutput);
 
         // when
         ProductOutput result = productService.getProductById(1L);
@@ -67,6 +69,7 @@ class ProductServiceTest {
         // then
         assertThat(result).isEqualTo(productOutput);
     }
+
     @DisplayName("상품 아이디 조회 실패 : 존재하지 않는 아이디 테스트")
     @Test
     void 상품아이디조회실패존재하지않는아이디테스트() {
@@ -78,6 +81,7 @@ class ProductServiceTest {
                 .isInstanceOf(NotFoundProductException.class)
                 .hasMessageContaining("Product not found with id: 1");
     }
+
     @DisplayName("상품 삽입 성공 테스트")
     @Test
     void 상품삽입성공테스트() {
@@ -86,9 +90,9 @@ class ProductServiceTest {
         Product product = new Product();
         ProductOutput productOutput = new ProductOutput();
 
-        when(modelMapper.map(productInput, Product.class)).thenReturn(product);
+        when(productMapper.toEntity(productInput)).thenReturn(product);
         when(productRepository.save(product)).thenReturn(product);
-        when(modelMapper.map(product, ProductOutput.class)).thenReturn(productOutput);
+        when(productMapper.toProductOutput(product)).thenReturn(productOutput);
 
         // when
         ProductOutput result = productService.insertProduct(productInput);
@@ -106,7 +110,7 @@ class ProductServiceTest {
 
         when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product));
         doNothing().when(productRepository).delete(product);
-        when(modelMapper.map(product, ProductOutput.class)).thenReturn(productOutput);
+        when(productMapper.toProductOutput(product)).thenReturn(productOutput);
 
         // when
         ProductOutput result = productService.removeProduct(1L);
@@ -134,21 +138,24 @@ class ProductServiceTest {
         int newStock = 20;
         String newImageUrl = "newImageUrl";
 
-        ProductInput productInput = new ProductInput();
-        productInput.setCategory(newCategory);
-        productInput.setStock(newStock);
-        productInput.setImageUrl(newImageUrl);
+        ProductUpdate productUpdate = new ProductUpdate();
+        productUpdate.setCategory(newCategory);
+        productUpdate.setStock(newStock);
+        productUpdate.setImageUrl(newImageUrl);
 
         Product product = new Product();
-        product.setId(1L);
+        product.updateInfo(newCategory, newStock, newImageUrl);
 
         ProductOutput productOutput = new ProductOutput();
 
         when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product));
-        when(modelMapper.map(product, ProductOutput.class)).thenReturn(productOutput);
+        // modelMapper 대신 productMapper 사용
+        productMapper.updateProduct(productUpdate, product);
+        when(productRepository.save(product)).thenReturn(product);
+        when(productMapper.toProductOutput(product)).thenReturn(productOutput);
 
         // when
-        ProductOutput result = productService.updateProduct(1L, productInput);
+        ProductOutput result = productService.updateProduct(1L, productUpdate);
 
         // then
         assertThat(result).isEqualTo(productOutput);
@@ -156,21 +163,20 @@ class ProductServiceTest {
         assertThat(product.getStock()).isEqualTo(newStock);
         assertThat(product.getImageUrl()).isEqualTo(newImageUrl);
     }
+
     @DisplayName("상품 수정 실패 : 존재하지 않는 아이디 테스트")
     @Test
     void 상품수정실패존재하지않는아이디테스트() {
         // given
         Long invalidProductId = 1L;
-        ProductInput productInput = new ProductInput();
-        productInput.setCategory(1);
-        productInput.setStock(10);
-        productInput.setImageUrl("testUrl");
+        ProductUpdate productUpdate = new ProductUpdate();
 
         when(productRepository.findById(invalidProductId)).thenReturn(java.util.Optional.empty());
 
         // when then
-        assertThatThrownBy(() -> productService.updateProduct(invalidProductId, productInput))
+        assertThatThrownBy(() -> productService.updateProduct(invalidProductId, productUpdate))
                 .isInstanceOf(NotFoundProductException.class)
                 .hasMessageContaining("Product not found with id: " + invalidProductId);
     }
+
 }

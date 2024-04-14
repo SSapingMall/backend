@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
+//@Setter entity에 setter두는건 안 좋다고 해서 삭제
 @Builder
 public class Product {
     @Id
@@ -38,4 +38,10 @@ public class Product {
 //    private User user;
     @Column(name = "user_id")
     private int userId;
+    // test code를 위해 추가
+    public void updateInfo(int category, int stock, String imageUrl) {
+        this.category = category;
+        this.stock = stock;
+        this.imageUrl = imageUrl;
+    }
 }

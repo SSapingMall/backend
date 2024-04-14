@@ -1,18 +1,18 @@
 package com.ssafy.springbootapi.domain.product.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @SuperBuilder
-public class ProductInput extends ProductBase {
+public class ProductUpdate extends ProductBase {
     private String description;
     private int category;
     private int stock;
-    @NotBlank(message = "user id is required")
-    private int user_id;
 }

@@ -6,6 +6,7 @@ import com.ssafy.springbootapi.domain.product.application.ProductService;
 import com.ssafy.springbootapi.domain.product.dto.ProductInput;
 import com.ssafy.springbootapi.domain.product.dto.ProductListOutput;
 import com.ssafy.springbootapi.domain.product.dto.ProductOutput;
+import com.ssafy.springbootapi.domain.product.dto.ProductUpdate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Product", description = "Product 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin
+//@CrossOrigin // spring security 디펜던시 삭제로 인한 주석처리
 @RequestMapping("/api/v1/products")
 public class ProductController {
     private final ProductService productService;
@@ -46,8 +47,8 @@ public class ProductController {
     }
 
     @Operation(summary = "제품 정보 업데이트")
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductOutput> updateProduct(@PathVariable Long id, @RequestBody ProductInput productDetails) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProductOutput> updateProduct(@PathVariable Long id, @RequestBody ProductUpdate productDetails) {
         // 서비스 레이어를 통해 비즈니스 로직 처리
         ProductOutput updatedProduct = productService.updateProduct(id, productDetails);
 
