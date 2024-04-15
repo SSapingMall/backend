@@ -2,7 +2,11 @@ package com.ssafy.springbootapi.domain.post.api;
 
 import com.ssafy.springbootapi.domain.post.application.PostService;
 import com.ssafy.springbootapi.domain.post.domain.Post;
+import com.ssafy.springbootapi.domain.post.dto.AddPostRequest;
+import com.ssafy.springbootapi.domain.post.dto.PostResponse;
+import com.ssafy.springbootapi.domain.post.dto.UpdatePostRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,44 +14,52 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @Tag(name = "Post", description = "Post API 입니다.")
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/posts")
 public class PostController {
+
     private final PostService postService;
-    
-    @Autowired
-    public PostController(PostService postService) {
-        this.postService = postService;
+
+    @PostMapping
+    public ResponseEntity<Post> addPost(@RequestBody AddPostRequest request) {
+        Post savedPost = postService.save(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(savedPost);
     }
 
     @GetMapping
-    public ResponseEntity<List<Post>> getAllPosts() {
-        List<Post> posts = postService.getAllPosts();
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+    public ResponseEntity<List<PostResponse>> findAllPosts() {
+        List<PostResponse> posts = postService.findAll()
+                .stream()
+                .map(PostResponse::new)
+                .toList();
+
+        return ResponseEntity.ok()
+                .body(posts);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable Long id) {
-        return postService.getPostById(id)
-                .map(post -> new ResponseEntity<>(post, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
+    public ResponseEntity<PostResponse> findPost(@PathVariable Long id) {
+        Post post = postService.findById(id);
 
-    @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post post) {
-        Post createdPost = postService.savePost(post);
-        return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
+        return ResponseEntity.ok()
+                .body(new PostResponse(post));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
-        postService.deletePost(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        postService.delete(id);
+        return ResponseEntity.ok()
+                .build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post postDetails) {
-        Post updatedPost = postService.updatePost(id, postDetails);
-        return new ResponseEntity<>(updatedPost, HttpStatus.OK);
+    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody UpdatePostRequest request) {
+        Post updatedPost = postService.update(id, request);
+
+        return ResponseEntity.ok()
+                .body(updatedPost);
     }
 }
