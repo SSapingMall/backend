@@ -3,39 +3,52 @@ package com.ssafy.springbootapi.domain.post.domain;
 
 import com.ssafy.springbootapi.domain.user.domain.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post {
     @Id
     @GeneratedValue
+    @Column(name = "id", updatable = false)
     private Long id;
 
-    private String contents;
+    @Column(name = "title", nullable = false)
+    private String title;
 
+    @Column(name = "content", nullable = false)
+    private String content;
+
+    @CreatedDate
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @LastModifiedDate
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "likes", nullable = false)
     private Long likes;
 
+    @Column(name = "dislikes", nullable = false)
     private Long dislikes;
 
+    @Column(name = "views", nullable = false)
     private Long views;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Post(long l, String firstPost, LocalDateTime now, LocalDateTime now1, long l1, long l2, long l3, User user) {
+    @Builder
+    public Post(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 
-
-    public Post() {
-
-    }
 }
