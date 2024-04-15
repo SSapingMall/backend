@@ -13,15 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@Tag(name = "Post", description = "Post API 입니다.")
+
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/posts")
 public class PostController {
 
     private final PostService postService;
 
-    @PostMapping
+    @PostMapping("/api/v1/posts")
     public ResponseEntity<Post> addPost(@RequestBody AddPostRequest request) {
         Post savedPost = postService.save(request);
 
@@ -29,7 +28,7 @@ public class PostController {
                 .body(savedPost);
     }
 
-    @GetMapping
+    @GetMapping("/api/v1/posts")
     public ResponseEntity<List<PostResponse>> findAllPosts() {
         List<PostResponse> posts = postService.findAll()
                 .stream()
@@ -40,7 +39,7 @@ public class PostController {
                 .body(posts);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/v1/posts/{id}")
     public ResponseEntity<PostResponse> findPost(@PathVariable Long id) {
         Post post = postService.findById(id);
 
@@ -48,14 +47,14 @@ public class PostController {
                 .body(new PostResponse(post));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/v1/posts/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         postService.delete(id);
         return ResponseEntity.ok()
                 .build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/api/v1/posts/{id}")
     public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody UpdatePostRequest request) {
         Post updatedPost = postService.update(id, request);
 
