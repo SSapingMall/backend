@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 @Getter
 public class PostReply {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "contents", nullable = false)
     private String content;
 
     @CreatedDate
