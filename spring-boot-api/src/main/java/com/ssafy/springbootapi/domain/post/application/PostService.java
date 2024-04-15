@@ -2,44 +2,46 @@ package com.ssafy.springbootapi.domain.post.application;
 
 import com.ssafy.springbootapi.domain.post.dao.PostRepository;
 import com.ssafy.springbootapi.domain.post.domain.Post;
+import com.ssafy.springbootapi.domain.post.dto.AddPostRequest;
+import com.ssafy.springbootapi.domain.post.dto.UpdatePostRequest;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class PostService {
     private final PostRepository postRepository;
 
-    @Autowired
-    public PostService(PostRepository postRepository) {
-        this.postRepository = postRepository;
+    public Post save(AddPostRequest request) {
+        return postRepository.save(request.toEntity());
     }
 
-    public List<Post> getAllPosts() {
+    public List<Post> findAll(){
         return postRepository.findAll();
     }
 
-    public Optional<Post> getPostById(Long id) {
-        return postRepository.findById(id);
+    public Post findById(long id) {
+        return postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
     }
 
-    public Post savePost(Post post) {
-        return postRepository.save(post);
-    }
-
-    public void deletePost(Long id) {
+    public void delete(long id) {
         postRepository.deleteById(id);
     }
 
-    public Post updatePost(Long id, Post postDetails) {
+    @Transactional
+    public Post update(long id, UpdatePostRequest request) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
 
-        post.setContents(postDetails.getContents());
+        post.update(request.getTitle(), request.getContent());
 
-        return postRepository.save(post);
+        return post;
     }
 
 }
