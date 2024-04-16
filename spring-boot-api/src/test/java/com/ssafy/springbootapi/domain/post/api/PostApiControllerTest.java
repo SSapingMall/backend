@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.springbootapi.domain.post.dao.PostRepository;
 import com.ssafy.springbootapi.domain.post.domain.Post;
 import com.ssafy.springbootapi.domain.post.dto.AddPostRequest;
+import com.ssafy.springbootapi.domain.post.dto.UpdatePostRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -75,5 +76,106 @@ public class PostApiControllerTest {
         assertThat(posts.get(0).getContent()).isEqualTo(content);
     }
 
+    @DisplayName("게시글 전부 조회 성공 테스트")
+    @Test
+    public void 게시글전부조회성공테스트() throws Exception {
+        //given
+        final String url = "/api/v1/posts";
+        final String title = "title";
+        final String content = "content";
+
+        postRepository.save(Post.builder()
+                .title(title)
+                .content(content)
+                .build());
+
+        //when
+        final ResultActions resultActions = mockMvc.perform(get(url)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].content").value(content))
+                .andExpect(jsonPath("$[0].title").value(title));
+    }
+
+    @DisplayName("게시글 아이디 조회 성공 테스트")
+    @Test
+    public void 게시글아이디조회성공테스트() throws Exception {
+        //given
+        final String url = "/api/v1/posts/{id}";
+        final String title = "title";
+        final String content = "content";
+
+        Post savedPost = postRepository.save(Post.builder()
+                .title(title)
+                .content(content)
+                .build());
+
+        //when
+        final ResultActions resultActions = mockMvc.perform(get(url, savedPost.getId()));
+
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value(content))
+                .andExpect(jsonPath("$.title").value(title));
+
+    }
+
+    @DisplayName("게시글 삭제 성공 테스트")
+    @Test
+    public void 게시글삭제성공테스트() throws Exception{
+        // given
+        final String url = "/api/v1/posts/{id}";
+        final String title = "title";
+        final String content = "content";
+
+        Post savedPost = postRepository.save(Post.builder()
+                .title(title)
+                .content(content)
+                .build());
+
+        //when
+        mockMvc.perform(delete(url, savedPost.getId()))
+                .andExpect(status().isOk());
+
+        //then
+        List<Post> posts = postRepository.findAll();
+
+        assertThat(posts).isEmpty();
+    }
+
+    @DisplayName("게시글 수정 성공 테스트")
+    @Test
+    public void 게시글수정성공테스트() throws Exception {
+        // given
+        final String url = "/api/v1/posts/{id}";
+        final String title = "title";
+        final String content = "content";
+
+        Post savedPost = postRepository.save(Post.builder()
+                .title(title)
+                .content(content)
+                .build());
+
+        final String newTitle = "new title";
+        final String newContent = "new content";
+
+        UpdatePostRequest request = new UpdatePostRequest(newTitle, newContent);
+
+        //when
+        ResultActions result = mockMvc.perform(put(url, savedPost.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request)));
+
+        // then
+        result.andExpect(status().isOk());
+        Post post = postRepository.findById(savedPost.getId()).get();
+
+        assertThat(post.getTitle()).isEqualTo(newTitle);
+        assertThat(post.getContent()).isEqualTo(newContent);
+    }
 
 }
