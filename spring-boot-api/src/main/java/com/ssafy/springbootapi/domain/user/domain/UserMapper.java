@@ -6,8 +6,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import java.util.Optional;
-
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
