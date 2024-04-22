@@ -76,6 +76,32 @@ public class PostApiControllerTest {
         assertThat(posts.get(0).getContent()).isEqualTo(content);
     }
 
+    @DisplayName("게시글 생성 실패 테스트 - 유효하지 않은 입력 값")
+    @Test
+    public void 게시글생성실패테스트_유효하지않은입력값() throws Exception {
+        // given
+        final String url = "/api/v1/posts";
+        final String invalidTitle = ""; // 유효하지 않은 제목
+        final String invalidContent = ""; // 유효하지 않은 내용
+        final AddPostRequest userRequestWithInvalidData = new AddPostRequest(invalidTitle, invalidContent);
+
+        final String requestBody = objectMapper.writeValueAsString(userRequestWithInvalidData);
+
+        // when
+        ResultActions result = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(requestBody));
+
+        // then
+        result.andExpect(status().isBadRequest()); // 400 Bad Request 상태 코드 예상
+
+        List<Post> posts = postRepository.findAll();
+
+        // 게시글이 생성되지 않았으므로, 저장된 게시글이 없어야 함
+        assertThat(posts.size()).isEqualTo(0);
+    }
+
+
     @DisplayName("게시글 전부 조회 성공 테스트")
     @Test
     public void 게시글전부조회성공테스트() throws Exception {

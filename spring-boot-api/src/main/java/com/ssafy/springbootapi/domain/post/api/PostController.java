@@ -6,10 +6,12 @@ import com.ssafy.springbootapi.domain.post.dto.AddPostRequest;
 import com.ssafy.springbootapi.domain.post.dto.PostResponse;
 import com.ssafy.springbootapi.domain.post.dto.UpdatePostRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +23,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/api/v1/posts")
-    public ResponseEntity<Post> addPost(@RequestBody AddPostRequest request) {
+    public ResponseEntity<Post> addPost(@Validated @RequestBody AddPostRequest request) {
         Post savedPost = postService.save(request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
