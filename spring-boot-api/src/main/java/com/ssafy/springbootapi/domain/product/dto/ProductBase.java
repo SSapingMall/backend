@@ -5,7 +5,6 @@ import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Getter
 @SuperBuilder
 public class ProductBase {
