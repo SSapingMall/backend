@@ -9,7 +9,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
 @SuperBuilder
 public class ProductUpdate extends ProductBase {
     private String description;
