@@ -14,5 +14,5 @@ public class ProductInput extends ProductBase {
     private int category;
     private int stock;
     @NotBlank(message = "user id is required")
-    private int user_id;
+    private Long user_id;
 }
