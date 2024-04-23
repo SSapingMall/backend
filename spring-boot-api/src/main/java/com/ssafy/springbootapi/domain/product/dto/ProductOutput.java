@@ -14,5 +14,5 @@ public class ProductOutput extends ProductListOutput{
     private String description;
     private int category;
     private int stock;
-    private int user_id;
+//    private int user_id;
 }
