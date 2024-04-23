@@ -7,6 +7,7 @@ import com.ssafy.springbootapi.domain.product.dto.ProductInput;
 import com.ssafy.springbootapi.domain.product.dto.ProductListOutput;
 import com.ssafy.springbootapi.domain.product.dto.ProductOutput;
 import com.ssafy.springbootapi.domain.product.dto.ProductUpdate;
+import com.ssafy.springbootapi.global.aop.annotation.ToException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +27,14 @@ public class ProductController {
     @GetMapping("")
     public ResponseEntity<List<ProductListOutput>> getAllProducts() {
         List<ProductListOutput> products = productService.getAllProducts();
-        return new ResponseEntity<>(products, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
     @Operation(summary = "제품 ID로 조회")
     @GetMapping("/{id}")
     public ResponseEntity<ProductOutput> getProductById(@PathVariable Long id) {
         ProductOutput product = productService.getProductById(id);
-        return new ResponseEntity<>(product, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(product);
     }
 
     @Operation(summary = "새 제품 추가")
@@ -43,7 +44,7 @@ public class ProductController {
         ProductOutput newProduct = productService.insertProduct(productInput);
 
         // 생성된 Product 객체 반환
-        return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newProduct);
     }
 
     @Operation(summary = "제품 정보 업데이트")
@@ -53,12 +54,12 @@ public class ProductController {
         ProductOutput updatedProduct = productService.updateProduct(id, productDetails);
 
         // 업데이트된 Product 객체 반환
-        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+        return ResponseEntity.ok().body(updatedProduct);
     }
     @Operation(summary = "제품 삭제")
     @DeleteMapping("/{id}")
     public ResponseEntity<ProductOutput> deleteProduct(@PathVariable Long id) {
-        ProductOutput product = productService.removeProduct(id);
-        return new ResponseEntity<>(product, HttpStatus.NO_CONTENT);
+        ProductOutput removedProduct = productService.removeProduct(id);
+        return ResponseEntity.ok().body(removedProduct);
     }
 }
