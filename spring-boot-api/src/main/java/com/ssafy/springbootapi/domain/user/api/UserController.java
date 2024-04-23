@@ -33,11 +33,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.getUserInfo(id));
     }
 
-    @PatchMapping
+    @PatchMapping("/{id}")
     @ToException
     @Operation(summary = "회원 정보 수정", description = "회원 정보 수정 할 때 사용하는 API")
-    public ResponseEntity<UserUpdateResponse> update(@RequestBody UserUpdateRequest userUpdateRequest){
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserInfo(userUpdateRequest));
+    public ResponseEntity<UserUpdateResponse> update(@PathVariable(required = true) Long id,@RequestBody UserUpdateRequest userUpdateRequest){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserInfo(id, userUpdateRequest));
     }
 
     @DeleteMapping("/{id}")
