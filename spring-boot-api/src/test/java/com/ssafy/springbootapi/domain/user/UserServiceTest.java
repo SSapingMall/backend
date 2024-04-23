@@ -121,7 +121,7 @@ public class UserServiceTest {
     void 유저수정성공테스트() {
         // given
         UserUpdateRequest requestDTO
-                = new UserUpdateRequest(1L,"kkho9654@naver2.com","1112","3333");
+                = new UserUpdateRequest("kkho9654@naver2.com","1112","3333");
         User user = User.builder()
                 .id(1L)
                 .email("kkho9654@naver.com")
