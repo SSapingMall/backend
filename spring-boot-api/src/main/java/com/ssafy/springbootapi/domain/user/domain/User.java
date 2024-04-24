@@ -34,7 +34,6 @@ public class User {
     private String name;
 
     @OneToMany(mappedBy = "user")
-    @Column(name = "addresses" , nullable = true)
     private List<Address> addresses;
 
     @Override
