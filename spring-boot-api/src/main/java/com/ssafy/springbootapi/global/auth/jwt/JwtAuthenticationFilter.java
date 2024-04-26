@@ -23,6 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        System.out.println("여기 들어오나?");
         // 요청 헤더의 Authorization 키의 값 조회
         String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
         // 가져온 값에서 접두사 제거
@@ -46,7 +47,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getServletPath()
-                .equals("/api/v1/login");
+        String path = request.getRequestURI();
+        System.out.println(request.getMethod() + " "+ request.getRequestURI());
+        if(request.getMethod().equals("POST")&&path.equals("/api/v1/users")){
+            return true;
+        }
+        return path.equals("/api/v1/users/login")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/api-docs");
     }
 }
