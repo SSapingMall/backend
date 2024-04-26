@@ -60,7 +60,7 @@ public class TokenProvider {
         String userEmail = claims.getSubject();
         UserDetails user = userDetailService.loadUserByUsername(userEmail);
 
-        return new UsernamePasswordAuthenticationToken(user.getUsername(), token, user.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(user.getUsername(), null, user.getAuthorities());
     }
 
     // 토큰 기반으로 유저 ID를 가져오는 메서드
