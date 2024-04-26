@@ -19,6 +19,13 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
+    @PostMapping("/login")
+    @ToException
+    @Operation(summary = "로그인", description = "로그인 할 때 사용하는 API")
+    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest userLoginRequest){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.login());
+    }
+
     @PostMapping
     @ToException
     @Operation(summary = "회원가입", description = "회원가입 할 때 사용하는 API")
