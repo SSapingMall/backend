@@ -18,7 +18,6 @@ public class UserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()->new UsernameNotFoundException(email+" 사용자 없음"));
-        SecurityUser securityUser = new SecurityUser(user);
-        return securityUser;
+        return new SecurityUser(user);
     }
 }
