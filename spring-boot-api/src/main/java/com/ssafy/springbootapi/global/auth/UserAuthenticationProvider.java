@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-class UserAuthenticationProvider implements AuthenticationProvider {
-
+public class UserAuthenticationProvider implements AuthenticationProvider {
     private final UserDetailService userDetailService;
     private final PasswordEncoder passwordEncoder;
 
@@ -21,12 +20,13 @@ class UserAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
+        System.out.println("username in auth provider:"+username);
 
         UserDetails u = userDetailService.loadUserByUsername(username);
         if (passwordEncoder.matches(password, u.getPassword())) {
             // 암호일치하면 필요한 세부정보를 넣은 Authentication 객체를 반환
             return new UsernamePasswordAuthenticationToken(
-                    username, password, u.getAuthorities()
+                    username, null, u.getAuthorities()
             );
         } else {
             throw new BadCredentialsException("Something went wrong!");
@@ -35,6 +35,6 @@ class UserAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return false;
+        return true;
     }
 }
