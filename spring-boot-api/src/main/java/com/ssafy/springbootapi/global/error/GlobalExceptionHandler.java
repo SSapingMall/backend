@@ -13,4 +13,9 @@ public class GlobalExceptionHandler { // Domain별 Exception 핸들러
     // public ResponseEntity<?> handleNotFoundProductException(NotFoundProductException ex) {
     //     return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     // }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity handleInvalidException(InvalidTokenException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 }
