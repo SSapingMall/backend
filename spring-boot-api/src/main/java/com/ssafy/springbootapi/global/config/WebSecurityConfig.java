@@ -1,25 +1,19 @@
 package com.ssafy.springbootapi.global.config;
 
-import com.ssafy.springbootapi.domain.user.dao.UserRepository;
-import com.ssafy.springbootapi.global.auth.JsonUsernamePasswordAuthenticationFilter;
-import com.ssafy.springbootapi.global.auth.MyAuthenticationSuccessHandler;
-import com.ssafy.springbootapi.global.auth.UserAuthenticationProvider;
-import com.ssafy.springbootapi.global.auth.UserDetailService;
+import com.ssafy.springbootapi.global.auth.jsonAuthentication.JsonUsernamePasswordAuthenticationFilter;
+import com.ssafy.springbootapi.global.auth.jsonAuthentication.JsonUserAuthenticationSuccessHandler;
+import com.ssafy.springbootapi.global.auth.jsonAuthentication.JsonUserAuthenticationProvider;
 import com.ssafy.springbootapi.global.auth.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -27,10 +21,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-    private final UserAuthenticationProvider userAuthenticationProvider;
+    private final JsonUserAuthenticationProvider jsonUserAuthenticationProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final MyAuthenticationSuccessHandler myAuthenticationSuccessHandler;
+    private final JsonUserAuthenticationSuccessHandler jsonUserAuthenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -46,8 +40,11 @@ public class WebSecurityConfig {
 
         // HTTP 요청에 대한 접근 제어
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("**").permitAll()
-                .requestMatchers("/api/v1/login").permitAll()  // 로그인 API는 모든 요청을 허용
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/api-docs/**").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/v1/users").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/v1/auth/token").permitAll()
+//                .requestMatchers("/api/v1/login").permitAll()  // 로그인 API는 모든 요청을 허용
                 .anyRequest().authenticated()                 // 그 외의 모든 요청은 인증 필요
         );
 
@@ -55,12 +52,12 @@ public class WebSecurityConfig {
         http.addFilterBefore(jwtAuthenticationFilter
                 ,UsernamePasswordAuthenticationFilter.class);
 
-        http.authenticationProvider(userAuthenticationProvider);
+        http.authenticationProvider(jsonUserAuthenticationProvider);
 
         // UsernamePasswordAuthenticationFilter 추가
         JsonUsernamePasswordAuthenticationFilter filter = new JsonUsernamePasswordAuthenticationFilter(authenticationManager(authenticationConfiguration));
-        filter.setAuthenticationSuccessHandler(myAuthenticationSuccessHandler);
-        filter.setFilterProcessesUrl("/api/v1/users/login");
+        filter.setAuthenticationSuccessHandler(jsonUserAuthenticationSuccessHandler);
+        filter.setFilterProcessesUrl("/api/v1/auth/login");
         http.addFilterAt(filter,
                 UsernamePasswordAuthenticationFilter.class);
 
