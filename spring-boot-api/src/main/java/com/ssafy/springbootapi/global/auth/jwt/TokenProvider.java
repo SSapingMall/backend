@@ -1,8 +1,7 @@
 package com.ssafy.springbootapi.global.auth.jwt;
 
 import com.ssafy.springbootapi.domain.user.domain.User;
-import com.ssafy.springbootapi.global.auth.SecurityUser;
-import com.ssafy.springbootapi.global.auth.UserDetailService;
+import com.ssafy.springbootapi.global.auth.SecurityUser.UserDetailService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
@@ -22,22 +21,23 @@ public class TokenProvider {
     private final JwtProperties jwtProperties;
     private final UserDetailService userDetailService;
 
-    public String generateToken(User user, Duration expiredAt) {
+    public String generateToken(String email, Duration expiredAt) {
         Date now = new Date();
-        return makeToken(new Date(now.getTime()+ expiredAt.toMillis()),user);
+        return makeToken(new Date(now.getTime()+ expiredAt.toMillis()),email);
     }
 
     // jwt token 생성
-    private String makeToken(Date expiry, User user){
+    private String makeToken(Date expiry, String email){
         Date now = new Date();
 
+        UserDetails user = userDetailService.loadUserByUsername(email);
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now)                       // iat: 발급시간
                 .setExpiration(expiry)                  // exp: 만료시간
-                .setSubject(user.getEmail())            // sub: 유저 이메일
-                .claim("id", user.getId())            // 클레임 id
+                .setSubject(user.getUsername())            // sub: 유저 이메일
+//                .claim("id", user.get())            // 클레임 id
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                 .compact();
     }

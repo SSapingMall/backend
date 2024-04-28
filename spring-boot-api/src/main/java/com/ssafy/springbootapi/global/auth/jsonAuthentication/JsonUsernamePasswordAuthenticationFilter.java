@@ -25,7 +25,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        System.out.println("In JsonUsernamePasswordAuthenticationFilter");
+//        System.out.println("In JsonUsernamePasswordAuthenticationFilter");
         if ("application/json".equals(request.getContentType())) {
             try {
                 // JSON 요청에서 사용자 이름과 비밀번호를 읽어옵니다.

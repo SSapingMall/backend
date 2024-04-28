@@ -24,16 +24,16 @@ public class AuthService {
 
         String accessToken = "";
         if (tokenProvider.validToken(refreshToken)){
-            System.out.println("valid refresh token");
+//            System.out.println("valid refresh token");
             refreshTokenRepository.findByRefreshToken(refreshToken).orElseThrow(()->
                     new InvalidTokenException("invalid refresh token!")
             );
-            System.out.println("existing refresh token");
+//            System.out.println("existing refresh token");
             Authentication authentication = tokenProvider.getAuthentication(refreshToken);
             accessToken = tokenProvider.generateToken(authentication.getName(), Duration.ofMinutes(1L));
-            System.out.println("new access token "+accessToken);
+//            System.out.println("new access token "+accessToken);
         }else {
-            System.out.println("InValid refresh token");
+//            System.out.println("InValid refresh token");
             throw new InvalidTokenException("invalid refresh token!");
         }
         return accessToken;
