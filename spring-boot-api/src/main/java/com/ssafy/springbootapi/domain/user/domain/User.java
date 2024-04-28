@@ -13,7 +13,7 @@ import java.util.List;
  * TODO:: id to uuid
  */
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
