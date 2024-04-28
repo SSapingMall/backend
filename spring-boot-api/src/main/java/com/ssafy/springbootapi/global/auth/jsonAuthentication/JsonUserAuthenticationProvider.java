@@ -1,5 +1,6 @@
-package com.ssafy.springbootapi.global.auth;
+package com.ssafy.springbootapi.global.auth.jsonAuthentication;
 
+import com.ssafy.springbootapi.global.auth.SecurityUser.UserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class UserAuthenticationProvider implements AuthenticationProvider {
+public class JsonUserAuthenticationProvider implements AuthenticationProvider {
     private final UserDetailService userDetailService;
     private final PasswordEncoder passwordEncoder;
 

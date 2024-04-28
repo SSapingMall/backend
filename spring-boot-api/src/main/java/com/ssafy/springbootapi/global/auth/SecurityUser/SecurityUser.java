@@ -1,4 +1,4 @@
-package com.ssafy.springbootapi.global.auth;
+package com.ssafy.springbootapi.global.auth.SecurityUser;
 
 import com.ssafy.springbootapi.domain.user.domain.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +13,10 @@ public class SecurityUser implements UserDetails {
 
     public SecurityUser(User user) {
         this.user = user;
+    }
+
+    public Long getUserId() {
+        return user.getId();
     }
 
     // 권한 반환

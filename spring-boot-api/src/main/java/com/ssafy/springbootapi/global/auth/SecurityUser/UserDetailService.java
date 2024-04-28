@@ -1,8 +1,7 @@
-package com.ssafy.springbootapi.global.auth;
+package com.ssafy.springbootapi.global.auth.SecurityUser;
 
 import com.ssafy.springbootapi.domain.user.dao.UserRepository;
 import com.ssafy.springbootapi.domain.user.domain.User;
-import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

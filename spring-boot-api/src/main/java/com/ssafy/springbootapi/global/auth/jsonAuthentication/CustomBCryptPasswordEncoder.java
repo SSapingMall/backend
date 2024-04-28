@@ -1,4 +1,4 @@
-package com.ssafy.springbootapi.global.auth;
+package com.ssafy.springbootapi.global.auth.jsonAuthentication;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
