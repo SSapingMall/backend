@@ -20,20 +20,15 @@ public class AuthService {
     public String provideNewAccessToken(String refreshToken){
         // refresh 토큰이 유효하다면 새 access 토큰 발급
         // refresh 토큰이 유효하지 않다면 exception
-//        SecurityContext context = SecurityContextHolder.getContext();
 
         String accessToken = "";
         if (tokenProvider.validToken(refreshToken)){
-//            System.out.println("valid refresh token");
             refreshTokenRepository.findByRefreshToken(refreshToken).orElseThrow(()->
                     new InvalidTokenException("invalid refresh token!")
             );
-//            System.out.println("existing refresh token");
             Authentication authentication = tokenProvider.getAuthentication(refreshToken);
             accessToken = tokenProvider.generateToken(authentication.getName(), Duration.ofMinutes(1L));
-//            System.out.println("new access token "+accessToken);
         }else {
-//            System.out.println("InValid refresh token");
             throw new InvalidTokenException("invalid refresh token!");
         }
         return accessToken;

@@ -6,6 +6,7 @@ import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshToken;
 import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -34,18 +35,25 @@ public class JsonUserAuthenticationSuccessHandler implements AuthenticationSucce
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         // 여기에서 UserService의 login을 실행
-//        User user = userRepository.findByEmail(authentication.getName()).orElseThrow();
         String email = authentication.getName();
 
-        String accessToken = tokenProvider.generateToken(email, Duration.ofMinutes(1L));
-        String refreshToken = tokenProvider.generateToken(email, Duration.ofMinutes(30L));
-        System.out.println("accessToken "+accessToken);
+        String accessToken = tokenProvider.generateToken(email, Duration.ofMinutes(15L));
+        String refreshToken = tokenProvider.generateToken(email, Duration.ofMinutes(60L));
         refreshTokenRepository.save(RefreshToken.builder()
                 .email(email)
                 .refreshToken(refreshToken)
                 .build());
+
+        // Refresh Token HttpOnly Cookie에 저장
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+//        refreshTokenCookie.setSecure(true); // HTTPS를 사용하는 경우에만 보낼 수 있도록 설정
+        refreshTokenCookie.setPath("/api/v1/auth/token"); // 토큰 재발급시에만 쿠키를 사용할 수 있다.
+        refreshTokenCookie.setMaxAge(60 * 60); // 유효 기간 설정
+
+        response.addCookie(refreshTokenCookie);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        new ObjectMapper().writeValue(response.getWriter(),new UserLoginResponse(accessToken,refreshToken));
+        new ObjectMapper().writeValue(response.getWriter(),new UserLoginResponse(accessToken));
     }
 }

@@ -7,5 +7,4 @@ import lombok.Getter;
 @Getter
 public class UserLoginResponse {
     String accessToken;
-    String refreshToken;
 }
