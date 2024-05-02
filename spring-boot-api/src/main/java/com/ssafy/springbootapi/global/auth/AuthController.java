@@ -22,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "로그인 할 때 사용하는 API")
-    public ResponseEntity<UserLoginResponse> login(){
+    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest userLoginRequest){
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
