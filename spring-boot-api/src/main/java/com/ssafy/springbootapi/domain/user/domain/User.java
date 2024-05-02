@@ -1,11 +1,10 @@
 package com.ssafy.springbootapi.domain.user.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -18,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Builder
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,17 +33,11 @@ public class User {
     @Column(name = "name", unique = false, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "user")
+    @Column(nullable = false, updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Address> addresses;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", name='" + name + '\'' +
-                ", addresses=" + addresses +
-                '}';
-    }
 }

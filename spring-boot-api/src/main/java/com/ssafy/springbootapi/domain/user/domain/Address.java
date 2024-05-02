@@ -1,5 +1,6 @@
 package com.ssafy.springbootapi.domain.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,8 +27,9 @@ public class Address {
     @Enumerated(EnumType.STRING)
     private IsDefault isDefault;
 
-    @ManyToOne // optional true => nullable
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
+    @JsonIgnore
     private User user;
 
 }
