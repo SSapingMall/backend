@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -13,5 +14,7 @@ import java.util.List;
 public class UserInfoResponse {
     private String email;
     private String name;
+    private LocalDateTime createdAt;
     private List<Address> addresses;
+
 }

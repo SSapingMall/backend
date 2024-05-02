@@ -53,6 +53,7 @@ public class UserService {
         return UserInfoResponse.builder()
                 .email(user.getEmail())
                 .name(user.getName())
+                .createdAt(user.getCreatedAt())
                 .addresses(user.getAddresses())
                 .build();
     }
@@ -65,7 +66,7 @@ public class UserService {
         userMapper.updateUserFromDto(requestDTO,user);
         user = userRepository.save(user);
 
-        return UserUpdateResponse.builder().email(user.getEmail()).name(user.getName()).build();
+        return UserUpdateResponse.builder().email(user.getEmail()).name(user.getName()).createdAt(user.getCreatedAt()).build();
     }
 
     public void removeUser(Long id) {
