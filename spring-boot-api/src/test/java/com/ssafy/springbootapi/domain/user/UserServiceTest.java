@@ -7,6 +7,7 @@ import com.ssafy.springbootapi.domain.user.domain.UserMapper;
 import com.ssafy.springbootapi.domain.user.dto.*;
 import com.ssafy.springbootapi.domain.user.exception.UserDuplicatedException;
 import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
+import com.ssafy.springbootapi.global.auth.jsonAuthentication.CustomBCryptPasswordEncoder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -19,6 +20,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -34,6 +36,9 @@ public class UserServiceTest {
     @Spy
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
+    @Mock
+    PasswordEncoder passwordEncoder;
+
     @InjectMocks
     UserService userService;
 
@@ -45,18 +50,27 @@ public class UserServiceTest {
         // given.
         UserSignUpRequest userSignUpRequest
                 = new UserSignUpRequest("kkho9654@naver.com","1234","kkh");
-        User userToSave = userSignUpRequest.toEntity();
+        User userToSave = User.builder()
+                .email("kkho9654@naver.com")
+                .password("encodedPassword")
+                .name("kkh").build();
         given(userRepository.findByEmail(anyString()))
                 .willReturn(Optional.empty());
 
         given(userRepository.save(any(User.class)))
                 .willReturn(userToSave);
+
+        // Mock the password encoding to return a specific encoded value
+        given(passwordEncoder.encode(userSignUpRequest.getPassword()))
+                .willReturn("encodedPassword");
+
         // when
         UserSignUpResponse userSignUpResponse = userService.signUp(userSignUpRequest);
 
         // then
         Assertions.assertThat(userSignUpResponse.getEmail())
                 .isEqualTo("kkho9654@naver.com");
+        verify(passwordEncoder).encode("1234"); // Ensure password encoding is called
     }
 
     @DisplayName("유저 회원가입 중복사용자 예외테스트")
