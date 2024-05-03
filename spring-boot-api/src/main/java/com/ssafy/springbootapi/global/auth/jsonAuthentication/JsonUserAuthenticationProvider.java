@@ -21,7 +21,6 @@ public class JsonUserAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        System.out.println("username in auth provider:"+username);
 
         UserDetails u = userDetailService.loadUserByUsername(username);
         if (passwordEncoder.matches(password, u.getPassword())) {
