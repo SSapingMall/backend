@@ -1,6 +1,7 @@
 package com.ssafy.springbootapi.global.auth.SecurityUser;
 
 import com.ssafy.springbootapi.domain.user.domain.User;
+import com.ssafy.springbootapi.domain.user.domain.UserType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +23,13 @@ public class SecurityUser implements UserDetails {
     // 권한 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_"+user.getType().toString()));
+        String type = null;
+        if(user.getType()==null){
+            type = UserType.BUYER.toString();
+        }else{
+            type = user.getType().toString();
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_"+type));
     }
 
     @Override
