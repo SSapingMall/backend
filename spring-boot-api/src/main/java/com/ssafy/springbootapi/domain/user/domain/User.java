@@ -33,6 +33,10 @@ public class User {
     @Column(name = "name", unique = false, nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", columnDefinition = "varchar(255) default 'BUYER'")
+    private UserType type = UserType.BUYER;
+
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;

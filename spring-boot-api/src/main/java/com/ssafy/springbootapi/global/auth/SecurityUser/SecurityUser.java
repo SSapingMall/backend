@@ -22,7 +22,7 @@ public class SecurityUser implements UserDetails {
     // 권한 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("user"));
+        return List.of(new SimpleGrantedAuthority("ROLE_"+user.getType().toString()));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.ssafy.springbootapi.global.config;
 
+import com.ssafy.springbootapi.domain.user.domain.UserType;
 import com.ssafy.springbootapi.global.auth.jsonAuthentication.JsonUsernamePasswordAuthenticationFilter;
 import com.ssafy.springbootapi.global.auth.jsonAuthentication.JsonUserAuthenticationSuccessHandler;
 import com.ssafy.springbootapi.global.auth.jsonAuthentication.JsonUserAuthenticationProvider;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -45,6 +47,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/v1/users").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/v1/auth/token").permitAll()
 //                .requestMatchers("/api/v1/login").permitAll()  // 로그인 API는 모든 요청을 허용
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()                 // 그 외의 모든 요청은 인증 필요
         );
 
