@@ -8,6 +8,7 @@ import com.ssafy.springbootapi.domain.user.exception.UserDuplicatedException;
 import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
 import com.ssafy.springbootapi.global.auth.jwt.TokenProvider;
 import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshToken;
+import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,7 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -61,7 +63,7 @@ public class UserService {
     @Transactional
     public UserUpdateResponse updateUserInfo(Long id, UserUpdateRequest requestDTO) {
         User user = userRepository.findById(id)
-                .orElseThrow(()->new UserNotFoundException(requestDTO.getEmail()+" 사용자 없음"));
+                .orElseThrow(()->new UserNotFoundException(id+" 사용자 없음"));
 
         userMapper.updateUserFromDto(requestDTO,user);
         user = userRepository.save(user);
@@ -69,9 +71,15 @@ public class UserService {
         return UserUpdateResponse.builder().email(user.getEmail()).name(user.getName()).createdAt(user.getCreatedAt()).build();
     }
 
+    @Transactional
     public void removeUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(()->new UserNotFoundException(id+" 사용자 없음"));
+
+        // refresh 토큰 삭제
+        refreshTokenRepository.findByEmail(user.getEmail())
+                        .ifPresent(refreshTokenRepository::delete);
+
         userRepository.delete(user);
     }
 
