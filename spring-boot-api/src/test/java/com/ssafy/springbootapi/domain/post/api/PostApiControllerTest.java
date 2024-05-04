@@ -101,12 +101,11 @@ public class PostApiControllerTest {
         assertThat(posts.size()).isEqualTo(0);
     }
 
-
-    @DisplayName("게시글 전부 조회 성공 테스트")
+    @DisplayName("게시글 페이징 조회 성공 테스트")
     @Test
-    public void 게시글전부조회성공테스트() throws Exception {
+    public void 게시글페이징조회성공테스트() throws Exception {
         //given
-        final String url = "/api/v1/posts";
+        final String url = "/api/v1/posts?page=0&size=10";
         final String title = "title";
         final String content = "content";
 
@@ -122,8 +121,8 @@ public class PostApiControllerTest {
         //then
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].content").value(content))
-                .andExpect(jsonPath("$[0].title").value(title));
+                .andExpect(jsonPath("$.content[0].content").value(content))
+                .andExpect(jsonPath("$.content[0].title").value(title));
     }
 
     @DisplayName("게시글 아이디 조회 성공 테스트")
