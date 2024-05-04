@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,17 +35,27 @@ public class PostController {
                 .body(savedPost);
     }
 
-    @Operation(summary = "게시글 리스트 불러오기")
-    @GetMapping("/api/v1/posts")
-    public ResponseEntity<List<PostResponse>> findAllPosts() {
-        List<PostResponse> posts = postService.findAll()
-                .stream()
-                .map(PostResponse::new)
-                .toList();
 
+
+    /** 스웨거에 넣을때
+     * {
+     *   "page": 0, //페이지번호
+     *   "size": 3, //한페이지당 몇개 표시할지
+     *   "sort": [
+     *     "id,asc" // id 오름차순
+     *   ]
+     * }
+     * @param pageable
+     * @return
+     */
+    @Operation(summary = "게시글 리스트 불러오기 페이지버전")
+    @GetMapping("/api/v1/posts")
+    public ResponseEntity<Page<PostResponse>> findAllPosts(Pageable pageable) {
+        Page<PostResponse> posts = postService.findAll(pageable);
         return ResponseEntity.ok()
                 .body(posts);
     }
+
 
     @Operation(summary = "게시글 아이디로 조회")
     @GetMapping("/api/v1/posts/{id}")
