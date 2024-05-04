@@ -43,11 +43,12 @@ public class UserService {
     }
 
     @Transactional
-    public UserUpdateResponse updateUserInfo(UserUpdateRequest requestDTO) {
-        User user = userRepository.findById(requestDTO.getId())
+    public UserUpdateResponse updateUserInfo(Long id, UserUpdateRequest requestDTO) {
+        User user = userRepository.findById(id)
                 .orElseThrow(()->new UserNotFoundException(requestDTO.getEmail()+" 사용자 없음"));
 
         userMapper.updateUserFromDto(requestDTO,user);
+
         user = userRepository.save(user);
 
         return UserUpdateResponse.builder().email(user.getEmail()).name(user.getName()).build();

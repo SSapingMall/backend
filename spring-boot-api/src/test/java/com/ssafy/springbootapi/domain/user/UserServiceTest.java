@@ -17,8 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Optional;
 
@@ -123,7 +121,7 @@ public class UserServiceTest {
     void 유저수정성공테스트() {
         // given
         UserUpdateRequest requestDTO
-                = new UserUpdateRequest(1L,"kkho9654@naver2.com","1112","3333");
+                = new UserUpdateRequest("kkho9654@naver2.com","1112","3333");
         User user = User.builder()
                 .id(1L)
                 .email("kkho9654@naver.com")
@@ -139,7 +137,7 @@ public class UserServiceTest {
                 .willReturn(updatedUser);
 
         // when
-        UserUpdateResponse responseDTO = userService.updateUserInfo(requestDTO);
+        UserUpdateResponse responseDTO = userService.updateUserInfo(1L, requestDTO);
 
         // then
         Assertions.assertThat(responseDTO.getEmail())
@@ -153,12 +151,12 @@ public class UserServiceTest {
         // given
         UserMapper userMapper = mock(UserMapper.class);
         Long id = 1L;
-        UserUpdateRequest requestDTO = new UserUpdateRequest(1L,"test","test","test");
+        UserUpdateRequest requestDTO = new UserUpdateRequest("test","test","test");
         given(userRepository.findById(id))
                 .willReturn(Optional.empty());
 
         // when
-        Assertions.assertThatThrownBy(()->userService.updateUserInfo(requestDTO))
+        Assertions.assertThatThrownBy(()->userService.updateUserInfo(id, requestDTO))
                 .isInstanceOf(UserNotFoundException.class);
 
         // then
