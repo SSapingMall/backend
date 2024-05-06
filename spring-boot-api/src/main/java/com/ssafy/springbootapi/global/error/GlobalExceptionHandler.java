@@ -1,5 +1,6 @@
 package com.ssafy.springbootapi.global.error;
 
+ import com.ssafy.springbootapi.domain.product.exception.NotFoundCategoryException;
  import com.ssafy.springbootapi.domain.product.exception.NotFoundProductException;
  import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
  import org.springframework.http.HttpStatus;
@@ -12,6 +13,11 @@ public class GlobalExceptionHandler { // Domain별 Exception 핸들러
 
      @ExceptionHandler(NotFoundProductException.class)
      public ResponseEntity<?> handleNotFoundProductException(NotFoundProductException ex) {
+         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+     }
+
+     @ExceptionHandler(NotFoundCategoryException.class)
+     public ResponseEntity<?> handleNotFoundCategoryException(NotFoundCategoryException ex) {
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
      }
 
