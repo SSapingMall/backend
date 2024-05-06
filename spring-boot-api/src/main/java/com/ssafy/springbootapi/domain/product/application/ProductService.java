@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.ssafy.springbootapi.domain.product.dao.CategoryRepository;
 import com.ssafy.springbootapi.domain.product.dao.ProductRepository;
 import com.ssafy.springbootapi.domain.product.domain.Category;
 import com.ssafy.springbootapi.domain.product.domain.Product;
@@ -13,7 +12,6 @@ import com.ssafy.springbootapi.domain.product.dto.ProductInput;
 import com.ssafy.springbootapi.domain.product.dto.ProductListOutput;
 import com.ssafy.springbootapi.domain.product.dto.ProductOutput;
 import com.ssafy.springbootapi.domain.product.dto.ProductUpdate;
-import com.ssafy.springbootapi.domain.product.exception.NotFoundCategoryException;
 import com.ssafy.springbootapi.domain.product.exception.NotFoundProductException;
 import com.ssafy.springbootapi.domain.user.dao.UserRepository;
 import com.ssafy.springbootapi.domain.user.domain.User;
@@ -120,8 +118,8 @@ public class ProductService {
 
     /**
      * id로 카테고리 찾기. 없을 경우 Exception 발생
-     * @param categoryId
-     * @return
+     * @param categoryId : 찾을 category 아이디
+     * @return 카테고리
      */
     private Category findCategoryByIdOrThrow(Integer categoryId) {
         return categoryService.getCategoryById(categoryId);
