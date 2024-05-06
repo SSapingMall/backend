@@ -1,6 +1,7 @@
 package com.ssafy.springbootapi.domain.product.application;
 
 import com.ssafy.springbootapi.domain.product.dao.ProductRepository;
+import com.ssafy.springbootapi.domain.product.domain.Category;
 import com.ssafy.springbootapi.domain.product.domain.Product;
 import com.ssafy.springbootapi.domain.product.domain.ProductMapper;
 import com.ssafy.springbootapi.domain.product.dto.ProductInput;
@@ -31,6 +32,9 @@ class ProductServiceTest {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private CategoryService categoryService;
 
     @Mock
     private ProductMapper productMapper;
@@ -93,16 +97,26 @@ class ProductServiceTest {
     void 상품삽입성공테스트() {
         // given
         Long userId = 1L; // 테스트용 user_id 값
+        Integer categoryId = 1; // 테스트용 카테고리 id값
+
         ProductInput productInput = new ProductInput();
         productInput.setUser_id(userId); // ProductInput에 user_id 설정
+        productInput.setCategory_id(categoryId);
+
         Product product = new Product();
         User user = new User(); // 새 User 객체 생성
         user.setId(userId); // User 객체에 id 설정
+
+        Category category = new Category(); // 새 카테고리 생성
+        category.setId(categoryId);
+
         ProductOutput productOutput = new ProductOutput();
 
         when(userRepository.findById(userId)).thenReturn(java.util.Optional.of(user)); // userRepository.findById 호출 시 user 반환
+        when(categoryService.getCategoryById(categoryId)).thenReturn(category);
         when(productMapper.toEntity(productInput)).thenReturn(product);
         product.setUser(user); // Product 객체에 User 설정
+        product.setCategory(category);
         when(productRepository.save(product)).thenReturn(product);
         when(productMapper.toProductOutput(product)).thenReturn(productOutput);
 
@@ -163,19 +177,17 @@ class ProductServiceTest {
     @Test
     void 상품수정성공테스트() {
         // given
-        int newCategory = 2;
         int newStock = 20;
         String newImageUrl = "newImageUrl";
 
         ProductUpdate productUpdate = new ProductUpdate();
         productUpdate.builder()
-                .category(newCategory)
                 .stock(newStock)
                 .imageUrl(newImageUrl).build();
         
 
         Product product = new Product();
-        product.updateInfo(newCategory, newStock, newImageUrl);
+        product.updateInfo(newStock, newImageUrl);
 
         ProductOutput productOutput = new ProductOutput();
 
@@ -190,7 +202,6 @@ class ProductServiceTest {
 
         // then
         assertThat(result).isEqualTo(productOutput);
-        assertThat(product.getCategory()).isEqualTo(newCategory);
         assertThat(product.getStock()).isEqualTo(newStock);
         assertThat(product.getImageUrl()).isEqualTo(newImageUrl);
     }
