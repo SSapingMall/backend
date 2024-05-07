@@ -8,6 +8,8 @@ import com.ssafy.springbootapi.domain.user.dto.*;
 import com.ssafy.springbootapi.domain.user.exception.UserDuplicatedException;
 import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
 import com.ssafy.springbootapi.global.auth.jsonAuthentication.CustomBCryptPasswordEncoder;
+import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshToken;
+import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshTokenRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -23,6 +25,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -32,6 +35,9 @@ import static org.mockito.Mockito.*;
 public class UserServiceTest {
     @Mock
     UserRepository userRepository;
+
+    @Mock
+    RefreshTokenRepository refreshTokenRepository;
 
     @Spy
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
@@ -99,7 +105,7 @@ public class UserServiceTest {
     @Test
     public void 유저정보읽기성공테스트(){
         // given
-        Long id = 1L;
+        UUID id = UUID.randomUUID();
         given(userRepository.findById(id))
                 .willReturn(Optional.of(User.builder()
                         .email("kkho9654@naver.com")
@@ -121,7 +127,7 @@ public class UserServiceTest {
     @Test
     void 유저정보읽기존재하지않는사용자예외테스트(){
         // given
-        Long id = 1L;
+        UUID id = UUID.randomUUID();
         given(userRepository.findById(id))
                 .willReturn(Optional.empty());
 
@@ -136,16 +142,16 @@ public class UserServiceTest {
     @Test
     void 유저수정성공테스트() {
         // given
-        Long id = 1L;
+        UUID id = UUID.randomUUID();
         UserUpdateRequest requestDTO
-                = new UserUpdateRequest("kkho9654@naver2.com","1112","3333");
+                = new UserUpdateRequest("1112","3333");
         User user = User.builder()
-                .id(1L)
+                .id(id)
                 .email("kkho9654@naver.com")
                 .password("1234")
                 .name("kkh").build();
         User updatedUser = userMapper.toEntity(requestDTO);
-        given(userRepository.findById(1L))
+        given(userRepository.findById(id))
                 .willReturn(Optional.of(user));
 
         doNothing().when(userMapper).updateUserFromDto(requestDTO, user);
@@ -157,8 +163,6 @@ public class UserServiceTest {
         UserUpdateResponse responseDTO = userService.updateUserInfo(id,requestDTO);
 
         // then
-        Assertions.assertThat(responseDTO.getEmail())
-                .isEqualTo(requestDTO.getEmail());
         Assertions.assertThat(responseDTO.getName())
                 .isEqualTo(requestDTO.getName());
     }
@@ -167,8 +171,8 @@ public class UserServiceTest {
     void 유저업데이트존재하지않는사용자예외테스트(){
         // given
         UserMapper userMapper = mock(UserMapper.class);
-        Long id = 1L;
-        UserUpdateRequest requestDTO = new UserUpdateRequest("test","test","test");
+        UUID id = UUID.randomUUID();
+        UserUpdateRequest requestDTO = new UserUpdateRequest("test","test");
         given(userRepository.findById(id))
                 .willReturn(Optional.empty());
 
@@ -184,25 +188,31 @@ public class UserServiceTest {
     @Test
     void 유저삭제성공테스트() {
         // given
-        Long id = 1L;
+        UUID id = UUID.randomUUID();
         User user = User.builder()
-                        .id(1L)
+                        .id(id)
                         .email("kkho9654@naver.com")
                         .name("kkh").password("123").build();
+        RefreshToken refreshToken = RefreshToken.builder()
+                        .userId(id)
+                        .refreshToken(UUID.randomUUID().toString()).build();
         given(userRepository.findById(id))
                 .willReturn(Optional.of(user));
+        given(refreshTokenRepository.findByUserId(id))
+                .willReturn(Optional.of(refreshToken));
         // when
         userService.removeUser(id);
 
         // then
         verify(userRepository).delete(user);
+        verify(refreshTokenRepository).delete(refreshToken);
     }
 
     @DisplayName("유저 삭제 존재하지않는 사용자 예외 테스트")
     @Test
     void 유저삭제존재하지않는사용자예외테스트(){
         // given
-        Long id = 1L;
+        UUID id = UUID.randomUUID();
         given(userRepository.findById(id))
                 .willReturn(Optional.empty());
 
