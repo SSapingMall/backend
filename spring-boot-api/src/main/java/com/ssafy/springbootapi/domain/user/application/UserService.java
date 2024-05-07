@@ -66,7 +66,9 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(()->new UserNotFoundException(id+" 사용자 없음"));
 
+        requestDTO.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
         userMapper.updateUserFromDto(requestDTO,user);
+
         user = userRepository.save(user);
 
         return UserUpdateResponse.builder().email(user.getEmail()).name(user.getName()).createdAt(user.getCreatedAt()).build();
