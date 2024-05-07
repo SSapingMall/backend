@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -29,21 +31,21 @@ public class UserController {
     @GetMapping("/{id}")
     @ToException
     @Operation(summary = "회원 정보", description = "유저정보 얻을 때 사용하는 API")
-    public ResponseEntity<UserInfoResponse> getInfo(@PathVariable Long id){
+    public ResponseEntity<UserInfoResponse> getInfo(@PathVariable UUID id){
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.getUserInfo(id));
     }
 
     @PatchMapping("/{id}")
     @ToException
     @Operation(summary = "회원 정보 수정", description = "회원 정보 수정 할 때 사용하는 API")
-    public ResponseEntity<UserUpdateResponse> update(@PathVariable(name = "id", required = true) Long id, @RequestBody UserUpdateRequest userUpdateRequest){
+    public ResponseEntity<UserUpdateResponse> update(@PathVariable(name = "id", required = true) UUID id, @RequestBody UserUpdateRequest userUpdateRequest){
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserInfo(id, userUpdateRequest));
     }
 
     @DeleteMapping("/{id}")
     @ToException
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 할 때 사용하는 API")
-    public ResponseEntity<Boolean> remove(@PathVariable Long id){
+    public ResponseEntity<Boolean> remove(@PathVariable UUID id){
         userService.removeUser(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

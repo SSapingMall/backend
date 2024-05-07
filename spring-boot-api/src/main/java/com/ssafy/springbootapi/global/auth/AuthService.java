@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -27,7 +28,7 @@ public class AuthService {
                     new InvalidTokenException("invalid refresh token!")
             );
             Authentication authentication = tokenProvider.getAuthentication(refreshToken);
-            accessToken = tokenProvider.generateToken(authentication.getName(), Duration.ofMinutes(1L));
+            accessToken = tokenProvider.generateToken(UUID.fromString(authentication.getName()), Duration.ofMinutes(1L));
         }else {
             throw new InvalidTokenException("invalid refresh token!");
         }

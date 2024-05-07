@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,14 +20,14 @@ public class RefreshToken {
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
     @Column(name = "refresh_token", nullable = false)
     private String refreshToken;
 
-    public RefreshToken(String email, String refreshToken){
-        this.email = email;
+    public RefreshToken(UUID userId, String refreshToken){
+        this.userId = userId;
         this.refreshToken = refreshToken;
     }
 

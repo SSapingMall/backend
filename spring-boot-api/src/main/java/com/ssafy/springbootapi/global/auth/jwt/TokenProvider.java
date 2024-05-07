@@ -1,6 +1,5 @@
 package com.ssafy.springbootapi.global.auth.jwt;
 
-import com.ssafy.springbootapi.domain.user.domain.User;
 import com.ssafy.springbootapi.global.auth.SecurityUser.UserDetailService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Date;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -21,22 +21,22 @@ public class TokenProvider {
     private final JwtProperties jwtProperties;
     private final UserDetailService userDetailService;
 
-    public String generateToken(String email, Duration expiredAt) {
+    public String generateToken(UUID id, Duration expiredAt) {
         Date now = new Date();
-        return makeToken(new Date(now.getTime()+ expiredAt.toMillis()),email);
+        return makeToken(new Date(now.getTime()+ expiredAt.toMillis()),id);
     }
 
     // jwt token 생성
-    private String makeToken(Date expiry, String email){
+    private String makeToken(Date expiry, UUID id){
         Date now = new Date();
 
-        UserDetails user = userDetailService.loadUserByUsername(email);
+//        UserDetails user = userDetailService.loadUserByUsername(email);
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now)                       // iat: 발급시간
                 .setExpiration(expiry)                  // exp: 만료시간
-                .setSubject(user.getUsername())            // sub: 유저 이메일
+                .setSubject(String.valueOf(id))            // sub: 유저 UUID
 //                .claim("id", user.get())            // 클레임 id
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                 .compact();
@@ -57,8 +57,8 @@ public class TokenProvider {
     // 토큰 기반으로 인증 정보를 가져오는 메서드 (토큰 유효성 검사 이후 실행)
     public Authentication getAuthentication(String token){
         Claims claims = getClaims(token);
-        String userEmail = claims.getSubject();
-        UserDetails user = userDetailService.loadUserByUsername(userEmail);
+        String uuid = claims.getSubject();
+        UserDetails user = userDetailService.loadUserByUsername(uuid);
 
         return new UsernamePasswordAuthenticationToken(user.getUsername(), null, user.getAuthorities());
     }

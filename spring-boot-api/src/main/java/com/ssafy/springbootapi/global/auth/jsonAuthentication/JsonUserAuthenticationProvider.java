@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 @Component
 public class JsonUserAuthenticationProvider implements AuthenticationProvider {
@@ -22,7 +24,8 @@ public class JsonUserAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        UserDetails u = userDetailService.loadUserByUsername(username);
+        UUID id = userDetailService.loadUserIdByUsername(username);
+        UserDetails u = userDetailService.loadUserByUsername(String.valueOf(id));
         if (passwordEncoder.matches(password, u.getPassword())) {
             // 암호일치하면 필요한 세부정보를 넣은 Authentication 객체를 반환
             return new UsernamePasswordAuthenticationToken(

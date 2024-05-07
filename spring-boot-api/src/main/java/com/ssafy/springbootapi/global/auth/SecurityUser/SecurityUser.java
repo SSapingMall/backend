@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 public class SecurityUser implements UserDetails {
     private final User user;
@@ -16,7 +17,7 @@ public class SecurityUser implements UserDetails {
         this.user = user;
     }
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return user.getId();
     }
 

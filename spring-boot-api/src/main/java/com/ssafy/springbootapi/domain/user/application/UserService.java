@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.UUID;
 
 /*
  * TODO:: 사용자 정의 exception
@@ -49,7 +50,7 @@ public class UserService {
     }
 
 
-    public UserInfoResponse getUserInfo(Long id) {
+    public UserInfoResponse getUserInfo(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(()->new UserNotFoundException(id+" 사용자 없음"));
         return UserInfoResponse.builder()
@@ -61,7 +62,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserUpdateResponse updateUserInfo(Long id, UserUpdateRequest requestDTO) {
+    public UserUpdateResponse updateUserInfo(UUID id, UserUpdateRequest requestDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(()->new UserNotFoundException(id+" 사용자 없음"));
 
@@ -72,12 +73,12 @@ public class UserService {
     }
 
     @Transactional
-    public void removeUser(Long id) {
+    public void removeUser(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(()->new UserNotFoundException(id+" 사용자 없음"));
 
         // refresh 토큰 삭제
-        refreshTokenRepository.findByEmail(user.getEmail())
+        refreshTokenRepository.findByUserId(id)
                         .ifPresent(refreshTokenRepository::delete);
 
         userRepository.delete(user);

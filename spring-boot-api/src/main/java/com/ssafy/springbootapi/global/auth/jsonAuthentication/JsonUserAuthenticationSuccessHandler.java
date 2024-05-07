@@ -1,5 +1,7 @@
 package com.ssafy.springbootapi.global.auth.jsonAuthentication;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.springbootapi.domain.user.dao.UserRepository;
+import com.ssafy.springbootapi.domain.user.domain.User;
 import com.ssafy.springbootapi.domain.user.dto.UserLoginResponse;
 import com.ssafy.springbootapi.global.auth.jwt.TokenProvider;
 import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshToken;
@@ -15,16 +17,19 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.UUID;
 
 @Component
 public class JsonUserAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
 
-    public JsonUserAuthenticationSuccessHandler(TokenProvider tokenProvider, RefreshTokenRepository refreshTokenRepository) {
+    public JsonUserAuthenticationSuccessHandler(UserRepository userRepository, TokenProvider tokenProvider, RefreshTokenRepository refreshTokenRepository) {
         this.tokenProvider = tokenProvider;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -36,11 +41,13 @@ public class JsonUserAuthenticationSuccessHandler implements AuthenticationSucce
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         // 여기에서 UserService의 login을 실행
         String email = authentication.getName();
+        User user = userRepository.findByEmail(email).orElseThrow();
+        UUID id = user.getId();
+        String accessToken = tokenProvider.generateToken(id, Duration.ofMinutes(15L));
+        String refreshToken = tokenProvider.generateToken(id, Duration.ofMinutes(60L));
 
-        String accessToken = tokenProvider.generateToken(email, Duration.ofMinutes(15L));
-        String refreshToken = tokenProvider.generateToken(email, Duration.ofMinutes(60L));
         refreshTokenRepository.save(RefreshToken.builder()
-                .email(email)
+                .userId(user.getId())
                 .refreshToken(refreshToken)
                 .build());
 
