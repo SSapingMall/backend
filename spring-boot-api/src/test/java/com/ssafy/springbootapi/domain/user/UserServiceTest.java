@@ -7,7 +7,6 @@ import com.ssafy.springbootapi.domain.user.domain.UserMapper;
 import com.ssafy.springbootapi.domain.user.dto.*;
 import com.ssafy.springbootapi.domain.user.exception.UserDuplicatedException;
 import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
-import com.ssafy.springbootapi.global.auth.jsonAuthentication.CustomBCryptPasswordEncoder;
 import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshToken;
 import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshTokenRepository;
 import org.assertj.core.api.Assertions;
@@ -20,8 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;

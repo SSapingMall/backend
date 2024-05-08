@@ -6,7 +6,6 @@ import com.ssafy.springbootapi.domain.user.dto.UserLoginResponse;
 import com.ssafy.springbootapi.global.auth.jwt.TokenProvider;
 import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshToken;
 import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshTokenRepository;
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +18,9 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.UUID;
 
+/**
+ * JSON 타입의 유저 로그인이 성공했을 때의 핸들러
+ */
 @Component
 public class JsonUserAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
@@ -32,6 +34,17 @@ public class JsonUserAuthenticationSuccessHandler implements AuthenticationSucce
         this.userRepository = userRepository;
     }
 
+    /**
+     * json 아이디 패스워드 인증 성공시 실행되는 메소드
+     * RefreshToken : Http-Only cookie - 60분
+     * AccessToken  : response body (UserLoginResponse DTO) - 15분
+     *
+     * @param request HttpServletRequest
+     * @param response HttpServletResponse
+     * @param authentication Authentication, 인증 정보
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String email = authentication.getName();

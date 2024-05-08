@@ -1,6 +1,5 @@
 package com.ssafy.springbootapi.global.auth.jwt.refreshToken;
 
-import com.ssafy.springbootapi.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

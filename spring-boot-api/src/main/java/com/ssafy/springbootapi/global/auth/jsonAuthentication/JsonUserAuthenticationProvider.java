@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+/**
+ * Json 데이터 타입으로 보낸 로그인 요청의 인증처리를 위한 인증 공급자
+ */
 @RequiredArgsConstructor
 @Component
 public class JsonUserAuthenticationProvider implements AuthenticationProvider {

@@ -6,17 +6,12 @@ import com.ssafy.springbootapi.domain.user.domain.UserMapper;
 import com.ssafy.springbootapi.domain.user.dto.*;
 import com.ssafy.springbootapi.domain.user.exception.UserDuplicatedException;
 import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
-import com.ssafy.springbootapi.global.auth.jwt.TokenProvider;
-import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshToken;
 import com.ssafy.springbootapi.global.auth.jwt.refreshToken.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.UUID;
 
 /*
