@@ -20,23 +20,48 @@ import java.util.Optional;
 public class PostService {
     private final PostRepository postRepository;
 
+    /**
+     * 게시글 등록
+     * @param request
+     * @return
+     */
     public Post save(AddPostRequest request) {
         return postRepository.save(request.toEntity());
     }
 
+    /**
+     * 게시글 리스트 불러오기
+     * @return
+     */
     public List<Post> findAll(){
         return postRepository.findAll();
     }
 
+    /**
+     * id로 게시글 찾기
+     * @param id 찾을 게시글 id
+     * @return
+     */
     public Post findById(long id) {
         return postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
     }
 
+
+    /**
+     * 게시글 삭제
+     * @param id 삭제할 게시글 id
+     */
     public void delete(long id) {
         postRepository.deleteById(id);
     }
 
+    /**
+     * 게시글 수정
+     * @param id 수정할 게시글 id
+     * @param request
+     * @return
+     */
     @Transactional
     public Post update(long id, UpdatePostRequest request) {
         Post post = postRepository.findById(id)
@@ -48,6 +73,11 @@ public class PostService {
     }
 
 
+    /**
+     * 페이지 나눠서 리스트 불러오기
+     * @param pageable
+     * @return
+     */
     //페이징 기능
     public Page<PostResponse> findAll(Pageable pageable) {
         Page<Post> posts = postRepository.findAll(pageable);
