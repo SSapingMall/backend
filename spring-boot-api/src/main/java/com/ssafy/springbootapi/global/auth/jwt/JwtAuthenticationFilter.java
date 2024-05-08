@@ -1,5 +1,6 @@
 package com.ssafy.springbootapi.global.auth.jwt;
 
+import com.ssafy.springbootapi.global.error.InvalidTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,16 +27,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
+        try {
+            String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
+            String token = getAccessToken(authorizationHeader);
 
-        String token = getAccessToken(authorizationHeader);
+            if (token != null && tokenProvider.validToken(token)) {
+                Authentication authentication = tokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                throw new InvalidTokenException("Invalid AccessToken");
+            }
 
-        if(tokenProvider.validToken(token)) {
-            Authentication authentication = tokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+        } catch (InvalidTokenException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Unauthorized: " + e.getMessage());
+            response.getWriter().flush();
+            return;
         }
-
-        filterChain.doFilter(request,response);
     }
 
     private String getAccessToken(String authorizationHeader){
