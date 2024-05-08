@@ -33,13 +33,7 @@ public class JsonUserAuthenticationSuccessHandler implements AuthenticationSucce
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-        AuthenticationSuccessHandler.super.onAuthenticationSuccess(request, response, chain, authentication);
-    }
-
-    @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        // 여기에서 UserService의 login을 실행
         String email = authentication.getName();
         User user = userRepository.findByEmail(email).orElseThrow();
         UUID id = user.getId();
