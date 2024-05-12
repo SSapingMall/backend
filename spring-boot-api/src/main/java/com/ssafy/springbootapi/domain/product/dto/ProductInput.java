@@ -11,8 +11,9 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class ProductInput extends ProductBase {
     private String description;
-    private int category;
-    private int stock;
+    @NotBlank(message = "category id is required")
+    private Integer category_id;
+    private Integer stock;
     @NotBlank(message = "user id is required")
     private Long user_id;
 }

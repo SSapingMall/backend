@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.ssafy.springbootapi.domain.product.dao.ProductRepository;
+import com.ssafy.springbootapi.domain.product.domain.Category;
 import com.ssafy.springbootapi.domain.product.domain.Product;
 import com.ssafy.springbootapi.domain.product.domain.ProductMapper;
 import com.ssafy.springbootapi.domain.product.dto.ProductInput;
@@ -17,15 +18,14 @@ import com.ssafy.springbootapi.domain.user.domain.User;
 import com.ssafy.springbootapi.domain.user.exception.UserNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final CategoryService categoryService;
     private final ProductMapper productMapper;
 
 
@@ -55,6 +55,7 @@ public class ProductService {
      * @param productInput : Product 생성 데이터
      * @return ProductOutput(DTO)
      */
+    @Transactional
     public ProductOutput insertProduct(ProductInput productInput) {
         // user_id로 User 객체 찾기
         Optional<User> userOptional = userRepository.findById(productInput.getUser_id());
@@ -62,11 +63,14 @@ public class ProductService {
                 new UserNotFoundException("User not found with id: " + productInput.getUser_id())
         );
 
+        Category category = findCategoryByIdOrThrow(productInput.getCategory_id());
+
         // ProductInput에서 Product 엔티티로 변환
         Product product = productMapper.toEntity(productInput);
 
         // User 객체를 Product 엔티티에 설정
         product.setUser(user);
+        product.setCategory(category);
 
         // Product 엔티티를 DB에 저장하고, 저장된 엔티티를 ProductOutput DTO로 변환하여 반환
         return productMapper.toProductOutput(productRepository.save(product));
@@ -78,6 +82,7 @@ public class ProductService {
      * @param id : 삭제할 product id
      * @return ProductOutput(DTO)
      */
+    @Transactional
     public ProductOutput removeProduct(Long id) {
         Product toRemove = findProductByIdOrThrow(id);
         productRepository.delete(toRemove);
@@ -93,6 +98,10 @@ public class ProductService {
     @Transactional
     public ProductOutput updateProduct(Long id, ProductUpdate productUpdate) {
         Product productToUpdate = findProductByIdOrThrow(id);
+        if(productUpdate.getCategory_id() != null) {
+            Category category = findCategoryByIdOrThrow(productUpdate.getCategory_id());
+            productToUpdate.setCategory(category);
+        }
         productMapper.updateProduct(productUpdate, productToUpdate);
         return productMapper.toProductOutput(productRepository.save(productToUpdate));
     }
@@ -105,5 +114,14 @@ public class ProductService {
     private Product findProductByIdOrThrow(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundProductException("Product not found with id: " + id));
+    }
+
+    /**
+     * id로 카테고리 찾기. 없을 경우 Exception 발생
+     * @param categoryId : 찾을 category 아이디
+     * @return 카테고리
+     */
+    private Category findCategoryByIdOrThrow(Integer categoryId) {
+        return categoryService.getCategoryById(categoryId);
     }
 }

@@ -41,25 +41,24 @@ public class Product {
     private String name;
 
     @Column(name = "price", nullable = false)
-    private int price;
+    private Integer price;
 
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    private int category;
+    @ManyToOne
+    @JoinColumn(name="category_id", nullable = false)
+    private Category category;
 
     @Column(nullable = false)
-    private int stock;
+    private Integer stock;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-//    @Column(name = "user_id")
-//    private int userId;
+
     // test code를 위해 추가
-    public void updateInfo(int category, int stock, String imageUrl) {
-        this.category = category;
+    public void updateInfo(int stock, String imageUrl) {
         this.stock = stock;
         this.imageUrl = imageUrl;
     }

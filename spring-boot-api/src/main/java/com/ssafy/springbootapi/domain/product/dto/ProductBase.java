@@ -10,5 +10,5 @@ import lombok.experimental.SuperBuilder;
 public class ProductBase {
     private String imageUrl;
     private String name;
-    private int price;
+    private Integer price;
 }
