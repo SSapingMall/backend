@@ -32,3 +32,10 @@ springdoc:
     doc-expansion: none
   paths-to-match:
     - /api/**
+
+logging:
+  level:
+    root: INFO
+#    com:
+#      ssafy.springbootapi.domain: DEBUG
+# ssafy.springbootapi.domain 아래에 있는 것들만 디버그로 보고싶을때 사용
